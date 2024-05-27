@@ -99,12 +99,12 @@ jobs:
         run: cross build --release --target=${{ matrix.target }}
 
       # The binaries are zipped to fix permission loss https://github.com/actions/upload-artifact#permission-loss
-      - name: Archive Binaries
-        if: runner.os == 'Windows'
-        run: |
-          PACTUP_BIN_NAME=pactup-${{ matrix.code-target }}
-          mv target/${{ matrix.target }}/release/pactup.exe $PACTUP_BIN_NAME.exe
-          7z a $PACTUP_BIN_NAME.zip $PACTUP_BIN_NAME.exe
+      # - name: Archive Binaries
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     PACTUP_BIN_NAME=pactup-${{ matrix.code-target }}
+      #     mv target/${{ matrix.target }}/release/pactup.exe $PACTUP_BIN_NAME.exe
+      #     7z a $PACTUP_BIN_NAME.zip $PACTUP_BIN_NAME.exe
 
       # The binaries are zipped to fix permission loss https://github.com/actions/upload-artifact#permission-loss
       - name: Archive Binaries

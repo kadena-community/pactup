@@ -1,0 +1,5 @@
+---
+"pactup": patch
+---
+
+npm publish
