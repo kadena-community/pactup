@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.8
+
+### Patch Changes
+
+- [`046270f`](https://github.com/kadena-community/pactup/commit/046270f1be9e5d8e439c823afd6744a3bf8e4a87) Thanks [@salamaashoush](https://github.com/salamaashoush)! - ci: remove manifest
+
 ## 0.2.7
 
 ### Patch Changes
