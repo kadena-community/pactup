@@ -41,10 +41,10 @@ jobs:
             eval "$(~/.local/share/pactup/pactup env)"
 
             echo "pactup install"
-            ~/.local/share/pactup/pactup install 12
+            ~/.local/share/pactup/pactup install 4.11
 
-            echo "node -v"
-            ~/.local/share/pactup/pactup exec --using=12 -- node -v
+            echo "pact --version"
+            ~/.local/share/pactup/pactup exec --using=4.11 -- pact --version
           '
 
   test_against_latest_release:
@@ -58,7 +58,7 @@ jobs:
           - os: macos
             script_arguments: ""
           - os: macos
-            script_arguments: "--force-no-brew"
+            script_arguments: ""
     runs-on: ${{ matrix.setup.os }}-latest
     steps:
       - uses: actions/checkout@v4

@@ -34,11 +34,6 @@ parse_args() {
       SKIP_SHELL="true"
       shift # past argument
       ;;
-    --force-install | --force-no-brew)
-      echo "\`--force-install\`: I hope you know what you're doing." >&2
-      FORCE_INSTALL="true"
-      shift
-      ;;
     -r | --release)
       RELEASE="$2"
       shift # past release argument

@@ -44,10 +44,6 @@ Set a custom directory for pactup to be installed. The default is `$XDG_DATA_HOM
 
 Skip appending shell specific loader to shell config file, based on the current user shell, defined in `$SHELL`. e.g. for Bash, `$HOME/.bashrc`. `$HOME/.zshrc` for Zsh. For Fish - `$HOME/.config/fish/conf.d/pactup.fish`
 
-`--force-install`
-
-macOS installations using the installation script are deprecated in favor of the Homebrew formula, but this forces the script to install using it anyway.
-
 Example:
 
 ```sh
