@@ -24,6 +24,6 @@ asciinema rec -c "$DIRECTORY/recorded_screen_script.sh" "$RECORDING_PATH"
 sed "s@$TEMP_DIR@~@g" "$RECORDING_PATH" |
   svg-term \
     --window \
-    --out "crate/pactup/docs/pactup.svg" \
+    --out "docs/pactup.svg" \
     --height=17 \
     --width=70
