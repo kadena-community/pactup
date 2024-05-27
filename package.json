@@ -8,8 +8,8 @@
   "packageManager": "pnpm@9.1.2",
   "license": "GPLv3",
   "scripts": {
-    "version:prepare": "changeset version && tsx ./scripts/prepare-version.js",
-    "generate-command-docs": "tsx ./scripts/print-command-docs.js"
+    "version:prepare": "changeset version && tsx ./scripts/prepare-version.ts",
+    "generate-command-docs": "tsx ./scripts/print-command-docs.ts"
   },
   "changelog": {
     "repo": "kadena-community/pactup",
@@ -21,9 +21,8 @@
     }
   },
   "devDependencies": {
-    "tsx": "^4.11.0",
-    "@changesets/cli": "2.27.3",
     "@changesets/changelog-github": "0.5.0",
+    "@changesets/cli": "2.27.3",
     "@types/node": "^20.12.12",
     "@types/shell-escape": "^0.2.3",
     "chalk": "^5.3.0",
@@ -34,7 +33,8 @@
     "prettier": "3.2.5",
     "shell-escape": "^0.2.0",
     "svg-term-cli": "2.1.1",
-    "typescript": "^5.4.5",
-    "toml": "^3.0.0"
+    "toml": "^3.0.0",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
   }
 }

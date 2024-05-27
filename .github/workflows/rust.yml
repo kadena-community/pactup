@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUST_VERSION: "stable"
+  RUST_VERSION: stable
 jobs:
   fmt:
     runs-on: ubuntu-latest
@@ -96,26 +96,22 @@ jobs:
       - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
-          targets: x86_64-unknown-linux-musl
+          targets: x86_64-unknown-linux-gnu
       - uses: Swatinem/rust-cache@v2
         with:
           key: static-linux-binary
-      - name: Install musl tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends musl-tools
 
       - uses: actions/checkout@v4
       - name: Build release binary
-        run: cargo build --release --target x86_64-unknown-linux-musl
+        run: cargo build --release --target x86_64-unknown-linux-gnu
         env:
           RUSTFLAGS: "-C target-feature=+crt-static"
       - name: Strip binary from debug symbols
-        run: strip target/x86_64-unknown-linux-musl/release/pactup
+        run: strip target/x86_64-unknown-linux-gnu/release/pactup
       - uses: actions/upload-artifact@v3
         with:
           name: pactup-linux
-          path: target/x86_64-unknown-linux-musl/release/pactup
+          path: target/x86_64-unknown-linux-gnu/release/pactup
 
   build_static_arm_binary:
     name: "Build ARM binary"
@@ -123,7 +119,7 @@ jobs:
       matrix:
         include:
           - arch: arm64
-            rust_target: aarch64-unknown-linux-musl
+            rust_target: aarch64-unknown-linux-gnu
             docker_image: arm64v8/ubuntu
             docker_platform: aarch64
           - arch: arm32
@@ -218,4 +214,4 @@ jobs:
       - run: pnpm install
       - name: Generate command markdown
         run: |
-          pnpm run pactup-command-docs --check --binary-path=$(which pactup)
+          pnpm run generate-command-docs --check --binary-path=$(which pactup)

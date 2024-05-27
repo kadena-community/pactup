@@ -22,7 +22,7 @@ type 'cat .pact-version'
 cat .pact-version
 
 type 'pactup install'
-pactup install --progress=never
+pactup install
 
 type 'pactup use'
 pactup use

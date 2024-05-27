@@ -75,11 +75,17 @@ List all remote Pact versions
 Usage: pactup list-remote [OPTIONS]
 
 Options:
+      --filter <FILTER>
+          Filter versions by a user-defined version or a semver range
+
       --pact-4x-repo <PACT_4X_REPO>
           <https://github.com/kadena-io/pact>
 
           [env: PACTUP_PACT4X_REPO]
           [default: kadena-io/pact]
+
+      --nightly
+          Show nightly versions
 
       --pact-5x-repo <PACT_5X_REPO>
           <https://github.com/kadena-io/pact>
@@ -91,6 +97,18 @@ Options:
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
+
+      --sort <SORT>
+          Version sorting order
+
+          [default: asc]
+
+          Possible values:
+          - desc: Sort versions in descending order (latest to earliest)
+          - asc:  Sort versions in ascending order (earliest to latest)
+
+      --latest
+          Only show the latest matching version
 
       --log-level <LOG_LEVEL>
           The log level of pactup commands
