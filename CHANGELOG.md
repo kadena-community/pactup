@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.7
+
+### Patch Changes
+
+- [`3b53838`](https://github.com/kadena-community/pactup/commit/3b53838c9af03dea7e450cb7984fbe070c7d7052) Thanks [@salamaashoush](https://github.com/salamaashoush)! - ci: publish main package as well
+
 ## 0.2.6
 
 ### Patch Changes
