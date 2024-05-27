@@ -1,5 +1,0 @@
----
-"pactup": minor
----
-
-Initial release
