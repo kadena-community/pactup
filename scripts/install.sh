@@ -224,7 +224,7 @@ setup_shell() {
     echo 'eval "`pactup env --use-on-cd`"' >>$CONF_FILE
 
   else
-    echo "Could not infer shell type. Please set up manually."
+    echo "Could not infer shell type. Please set up manually. $CURRENT_SHELL"
     exit 1
   fi
 

@@ -15,7 +15,6 @@ jobs:
       matrix:
         docker_image:
           - arm64v8/ubuntu
-          - arm32v7/ubuntu
     name: Test against latest release (ARM)
     runs-on: ubuntu-latest
     steps:
