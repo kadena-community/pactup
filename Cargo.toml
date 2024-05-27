@@ -72,3 +72,7 @@ lto = "thin"      # Performs “thin” LTO. This is similar to “fat”, but t
 opt-level = 3
 panic = "abort"
 strip = true
+
+
+[package.metadata.cargo-shear]
+ignored = ["csv", "junction"]
