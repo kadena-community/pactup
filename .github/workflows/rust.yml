@@ -214,4 +214,4 @@ jobs:
       - run: pnpm install
       - name: Generate command markdown
         run: |
-          pnpm run generate-command-docs --check --binary-path=$(which pactup)
+          pnpm run generate-command-docs --check --pactup-path=$(which pactup)
