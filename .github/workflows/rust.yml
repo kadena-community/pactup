@@ -11,27 +11,27 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  RUST_VERSION: "1.78"
+  RUST_VERSION: "stable"
 jobs:
   fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: cargo fmt
         run: cargo fmt -- --check
 
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: cargo clippy
         run: cargo clippy -- -D warnings
 
@@ -41,11 +41,11 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
     steps:
-      - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Run tests
         run: cargo test
 
@@ -53,11 +53,11 @@ jobs:
   #   runs-on: windows-latest
   #   name: "Release build for Windows"
   #   steps:
-  #     - uses: hecrj/setup-rust-action@v1
+  #     - uses: hecrj/setup-rust-action@v2
   #       with:
   #         rust-version: ${{env.RUST_VERSION}}
   #     - uses: Swatinem/rust-cache@v2
-  #     - uses: actions/checkout@v3
+  #     - uses: actions/checkout@v4
   #     - name: Build release binary
   #       run: cargo build --release
   #       env:
@@ -71,11 +71,11 @@ jobs:
     runs-on: macos-latest
     name: "Release build for macOS"
     steps:
-      - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: cargo build --release
         env:
@@ -93,7 +93,7 @@ jobs:
     name: "Build static Linux binary"
     runs-on: ubuntu-latest
     steps:
-      - uses: hecrj/setup-rust-action@v1
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
           targets: x86_64-unknown-linux-musl
@@ -104,7 +104,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends musl-tools
-      - uses: actions/checkout@v3
+
+      - uses: actions/checkout@v4
       - name: Build release binary
         run: cargo build --release --target x86_64-unknown-linux-musl
         env:
@@ -135,8 +136,8 @@ jobs:
     steps:
       - name: Set up QEMU
         id: qemu
-        uses: docker/setup-qemu-action@v2
-      - uses: hecrj/setup-rust-action@v1
+        uses: docker/setup-qemu-action@v3
+      - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
       - uses: Swatinem/rust-cache@v2
@@ -144,10 +145,10 @@ jobs:
           key: arm-binary-${{ matrix.arch }}
       - name: "Download `cross` crate"
         run: cargo install cross
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: "Build release"
         run: cross build --target $RUST_TARGET --release
-      - uses: uraimo/run-on-arch-action@v2.1.2
+      - uses: uraimo/run-on-arch-action@v2.7.2
         name: Sanity test
         with:
           arch: ${{matrix.docker_platform}}
@@ -184,7 +185,7 @@ jobs:
     steps:
       - name: install necessary shells
         run: sudo apt-get update && sudo apt-get install -y fish zsh bash
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
           name: pactup-linux
@@ -195,21 +196,22 @@ jobs:
         run: |
           sudo install target/release/pactup /bin
           pactup --version
-      - uses: pnpm/action-setup@v2.2.4
+      - uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 22.x
           cache: "pnpm"
       - name: Get pnpm store directory
-        id: pnpm-cache
+        shell: bash
         run: |
-          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
-      - uses: actions/cache@v3
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
