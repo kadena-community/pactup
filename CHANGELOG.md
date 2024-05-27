@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.2
+
+### Patch Changes
+
+- [`7f90992`](https://github.com/kadena-community/pactup/commit/7f9099207a99e7763f8144c0d3d229d3bcfdb5ac) Thanks [@salamaashoush](https://github.com/salamaashoush)! - debug
+
 ## 0.2.1
 
 ### Patch Changes
