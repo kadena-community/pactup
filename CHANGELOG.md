@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.5
+
+### Patch Changes
+
+- [`5a43595`](https://github.com/kadena-community/pactup/commit/5a43595040393afa9ade65266e8a22309b8e3378) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Fix npm publish script
+
 ## 0.2.4
 
 ### Patch Changes
