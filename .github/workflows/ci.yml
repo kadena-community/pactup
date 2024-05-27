@@ -139,7 +139,7 @@ jobs:
       - uses: Boshen/setup-rust@main
         with:
           components: clippy
-      - run: cargo clippy -- -D warnings
+      - run: cargo lint -- -D warnings
 
   doc:
     name: Doc
