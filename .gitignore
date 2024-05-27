@@ -20,3 +20,4 @@ feature_tests/.tmp
 *.log
 .vercel
 .proxy
+npm/

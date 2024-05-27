@@ -1,4 +1,4 @@
-name: release
+name: changeset
 on:
   push:
     branches:

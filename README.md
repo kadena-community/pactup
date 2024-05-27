@@ -51,7 +51,7 @@ macOS installations using the installation script are deprecated in favor of the
 Example:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/kadena-community/pactup/main/scripts/install.sh | bash -s -- --install-dir "./.pactup" --skip-shell
+curl -fsSL https://raw.githubusercontent.com//main/scripts/install.sh | bash -s -- --install-dir "./.pactup" --skip-shell
 ```
 
 ### Manually
@@ -66,7 +66,7 @@ Then, [set up your shell for pactup](#shell-setup)
 
 #### Using a release binary (Linux/macOS/Windows)
 
-- Download the [latest release binary](https://github.com/Schniz/pactup/releases) for your system
+- Download the [latest release binary](https://github.com/kadena-community/pactup/releases) for your system
 - Make it available globally on `PATH` environment variable
 - [Set up your shell for pactup](#shell-setup)
 
@@ -210,7 +210,7 @@ cargo build
 cargo run -- --help # Will behave like `pactup --help`
 ```
 
-### Running Tests:
+### Running Tests
 
 ```sh
 cargo test

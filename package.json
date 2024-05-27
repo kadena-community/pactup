@@ -1,15 +1,26 @@
 {
   "name": "pactup",
   "version": "0.2.0",
-  "private": true,
   "repository": "git@github.com:kadena-community/pactup.git",
-  "author": "Salama Ashoush <gal@spitfire.co.il>",
-  "type": "module",
+  "author": "Salama Ashoush <salamaaashoush@gmail.com>",
   "packageManager": "pnpm@9.1.2",
   "license": "GPLv3",
+  "description": "Linter for the JavaScript Oxidation Compiler",
+  "keywords": [],
+  "homepage": "https://github.com/kadena-community/pactup",
+  "bugs": "https://github.com/kadena-community/pactup/issues",
+  "bin": "bin/pactup",
+  "engines": {
+    "node": ">=14.*"
+  },
+  "files": [
+    "bin/pactup",
+    "README.md"
+  ],
   "scripts": {
     "version:prepare": "changeset version && tsx ./scripts/prepare-version.ts",
-    "generate-command-docs": "tsx ./scripts/print-command-docs.ts"
+    "generate-command-docs": "tsx ./scripts/print-command-docs.ts",
+    "generate-npm-packages": "node ./scripts/generate-npm-packages.mjs"
   },
   "changelog": {
     "repo": "kadena-community/pactup",

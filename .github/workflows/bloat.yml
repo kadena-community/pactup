@@ -1,0 +1,43 @@
+# Run `cargo bloat` for finding out what takes most of the space in your executable.
+
+name: Cargo Bloat
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  bloat:
+    name: Cargo Bloat
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: taiki-e/checkout-action@v1
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install cargo-bloat
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-bloat
+
+      - name: Run
+        run: |
+          export CMD="cargo bloat"
+
+          # Get largest functions
+          export BLOAT_FUNC_CMD="${CMD} -n 10"
+          export BLOAT_FUNC=`${BLOAT_FUNC_CMD}`
+          echo "${BLOAT_FUNC}"
+
+          # Get largest crates
+          export BLOAT_CRATE_CMD="${CMD} --crates -n 10"
+          export BLOAT_CRATE=`${BLOAT_CRATE_CMD}`
+          echo "${BLOAT_CRATE}"
+
+          # Render summary
+          envsubst < .github/workflows/bloat.tmpl > $GITHUB_STEP_SUMMARY
