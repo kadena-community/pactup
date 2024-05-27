@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.6
+
+### Patch Changes
+
+- [`5e5193b`](https://github.com/kadena-community/pactup/commit/5e5193bfe01df23b4dc696e1a0e44bedf94fa136) Thanks [@salamaashoush](https://github.com/salamaashoush)! - ci: ensure npm folder is created on ci
+
 ## 0.2.5
 
 ### Patch Changes
