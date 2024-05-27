@@ -15,8 +15,8 @@ const command = cmd.command({
   async handler({}) {
     updateCargoToml(await getPackageVersion());
     exec("cargo build --release");
-    exec("pnpm generate-command-docs --binary-path=./target/release/pactup");
-    exec("./scripts/record_screen.sh");
+    exec("pnpm generate-command-docs --pactup-path=./target/release/pactup");
+    // exec("./scripts/record_screen.sh");
   },
 });
 

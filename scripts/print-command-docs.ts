@@ -28,7 +28,7 @@ const command = cmd.command({
       description: `Check that file was not changed`,
     }),
     pactupPath: cmd.option({
-      long: "binary-path",
+      long: "pactup-path",
       description: "the pactup binary path",
       type: PactupBinaryPath,
     }),
