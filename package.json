@@ -1,12 +1,23 @@
 {
   "name": "pactup",
   "version": "0.2.6",
-  "repository": "git@github.com:kadena-community/pactup.git",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kadena-community/pactup.git"
+  },
   "author": "Salama Ashoush <salamaaashoush@gmail.com>",
   "packageManager": "pnpm@9.1.2",
   "license": "GPLv3",
   "description": "Linter for the JavaScript Oxidation Compiler",
-  "keywords": [],
+  "keywords": [
+    "pact",
+    "pact-lang",
+    "pactup",
+    "kadena",
+    "kda",
+    "kadena-community",
+    "smart-contracts"
+  ],
   "homepage": "https://github.com/kadena-community/pactup",
   "bugs": "https://github.com/kadena-community/pactup/issues",
   "bin": "bin/pactup",
