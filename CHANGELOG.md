@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.4
+
+### Patch Changes
+
+- [`70fa7da`](https://github.com/kadena-community/pactup/commit/70fa7dacca560a96c22e3cb0aebee3031e699846) Thanks [@salamaashoush](https://github.com/salamaashoush)! - chore: fix publish ci job
+
 ## 0.2.3
 
 ### Patch Changes
