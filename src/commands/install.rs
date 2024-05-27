@@ -237,6 +237,8 @@ mod tests {
     );
   }
 
+  // latest 4.12 doesn't have macos binaries
+  #[cfg(target_os = "linux")]
   #[test]
   fn test_install_latest() {
     let base_dir = tempfile::tempdir().unwrap();

@@ -111,6 +111,7 @@ pub fn install_pact_dist<P: AsRef<Path>>(
 }
 
 #[cfg(test)]
+#[cfg(target_os = "linux")]
 mod tests {
   use super::*;
   use crate::downloader::install_pact_dist;
@@ -135,7 +136,10 @@ mod tests {
 
   fn install_in(path: &Path) -> PathBuf {
     let version = Version::parse("4.11.0").unwrap();
+    #[cfg(target_arch = "x86_64")]
     let arch = Arch::X64;
+    #[cfg(target_arch = "aarch64")]
+    let arch = Arch::Arm64;
     // github release asset url
     let pact_dist_mirror = Url::parse(
       "https://github.com/kadena-io/pact/releases/download/v4.11.0/pact-4.11.0-linux-20.04.zip",
