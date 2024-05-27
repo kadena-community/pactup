@@ -15,12 +15,21 @@ const command = cmd.command({
   async handler({}) {
     updateCargoToml(await getPackageVersion());
     exec("cargo build --release");
-    // exec("pnpm generate-command-docs --pactup-path=./target/release/pactup");
-    // exec("./scripts/record_screen.sh");
+    exec("pnpm generate-command-docs --pactup-path=./target/release/pactup");
+    exec("./scripts/record_screen.sh");
   },
 });
 
-cmd.run(cmd.binary(command), process.argv);
+cmd
+  .run(cmd.binary(command), process.argv)
+  .then(() => {
+    console.log("Done!", process.exitCode);
+    process.exitCode = 0;
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = process.exitCode || 1;
+  });
 
 //////////////////////
 // Helper functions //
