@@ -45,7 +45,6 @@ impl super::command::Command for LsRemote {
       stable_versions.extend(nightly_versions);
       stable_versions
     } else {
-      
       remote_pact_index::list(&config.pact_4x_repo)?
     };
 
