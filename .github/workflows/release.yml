@@ -44,6 +44,10 @@ jobs:
         run: |
           pipx install asciinema
 
+      - name: Install svg-term-cli
+        run: |
+          npm install -g svg-term-cli
+
       - name: Install Node.js project dependencies
         run: pnpm install
 
