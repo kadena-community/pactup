@@ -52,32 +52,35 @@ parse_args() {
   done
 }
 
+# pactup-darwin-arm64.tar.gz
+# pactup-darwin-x64.tar.gz
+# pactup-linux-arm64-gnu.tar.gz
+# pactup-linux-arm64-musl.tar.gz
+# pactup-linux-x64-gnu.tar.gz
+# pactup-linux-x64-musl.tar.gz
 set_filename() {
   if [ "$OS" = "Linux" ]; then
     # Based on https://stackoverflow.com/a/45125525
     case "$(uname -m)" in
-    arm | armv7*)
-      FILENAME="pactup-arm32"
-      ;;
     aarch* | armv8*)
-      FILENAME="pactup-arm64"
+      FILENAME="pactup-linux-arm64-gnu.tar.gz"
       ;;
     *)
-      FILENAME="pactup-linux"
+      FILENAME="pactup-linux-x64-gnu.tar.gz"
       ;;
     esac
-  elif [ "$OS" = "Darwin" ] && [ "$FORCE_INSTALL" = "true" ]; then
-    FILENAME="pactup-macos"
-    USE_HOMEBREW="false"
-    echo "Downloading the latest pactup binary from GitHub..."
-    echo "  Pro tip: it's easier to use Homebrew for managing pactup in macOS."
-    echo "           Remove the \`--force-no-brew\` so it will be easy to upgrade."
   elif [ "$OS" = "Darwin" ]; then
-    USE_HOMEBREW="true"
-    echo "Downloading pactup using Homebrew..."
-  elif [ "$OS" = "Windows" ]; then
-    FILENAME="pactup-windows"
-    echo "Downloading the latest pactup binary from GitHub..."
+    case "$(uname -m)" in
+    aarch* | armv8*)
+      FILENAME="pactup-darwin-arm64.tar.gz"
+      ;;
+    *)
+      FILENAME="pactup-darwin-x64.tar.gz"
+      ;;
+    esac
+  # elif [ "$OS" = "Windows" ]; then
+  #   FILENAME="pactup-windows"
+  #   echo "Downloading the latest pactup binary from GitHub..."
   else
     echo "OS $OS is not supported."
     echo "If you think that's a bug - please file an issue to https://github.com/kadena-community/pactup/issues"
@@ -86,36 +89,47 @@ set_filename() {
 }
 
 download_pactup() {
-  if [ "$USE_HOMEBREW" = "true" ]; then
-    brew install pactup
+  if [ "$RELEASE" = "latest" ]; then
+    URL="https://github.com/kadena-community/pactup/releases/latest/download/$FILENAME"
   else
-    if [ "$RELEASE" = "latest" ]; then
-      URL="https://github.com/kadena-community/pactup/releases/latest/download/$FILENAME.zip"
-    else
-      URL="https://github.com/kadena-community/pactup/releases/download/$RELEASE/$FILENAME.zip"
-    fi
-
-    DOWNLOAD_DIR=$(mktemp -d)
-
-    echo "Downloading $URL..."
-
-    mkdir -p "$INSTALL_DIR" &>/dev/null
-
-    if ! curl --progress-bar --fail -L "$URL" -o "$DOWNLOAD_DIR/$FILENAME.zip"; then
-      echo "Download failed.  Check that the release/filename are correct."
-      exit 1
-    fi
-
-    unzip -q "$DOWNLOAD_DIR/$FILENAME.zip" -d "$DOWNLOAD_DIR"
-
-    if [ -f "$DOWNLOAD_DIR/pactup" ]; then
-      mv "$DOWNLOAD_DIR/pactup" "$INSTALL_DIR/pactup"
-    else
-      mv "$DOWNLOAD_DIR/$FILENAME/pactup" "$INSTALL_DIR/pactup"
-    fi
-
-    chmod u+x "$INSTALL_DIR/pactup"
+    URL="https://github.com/kadena-community/pactup/releases/download/$RELEASE/$FILENAME"
   fi
+
+  DOWNLOAD_DIR=$(mktemp -d)
+
+  echo "Downloading $URL..."
+
+  mkdir -p "$INSTALL_DIR" &>/dev/null
+
+  if ! curl --progress-bar --fail -L "$URL" -o "$DOWNLOAD_DIR/$FILENAME.zip"; then
+    echo "Download failed.  Check that the release/filename are correct."
+    exit 1
+  fi
+
+  # if .tar.gz
+  if [ "${FILENAME: -7}" == ".tar.gz" ]; then
+    tar -xzf "$DOWNLOAD_DIR/$FILENAME.zip" -C "$DOWNLOAD_DIR"
+  elif [ "${FILENAME: -4}" == ".zip" ]; then
+    unzip -q "$DOWNLOAD_DIR/$FILENAME.zip" -d "$DOWNLOAD_DIR"
+  else
+    echo "Unknown file extension for $FILENAME"
+    exit 1
+  fi
+
+  # binary name is same as filename without extension it could be .tar.gz or .zip
+  if [ "${FILENAME: -7}" == ".tar.gz" ]; then
+    BINARY_NAME="${FILENAME%.tar.gz}"
+  elif [ "${FILENAME: -4}" == ".zip" ]; then
+    BINARY_NAME="${FILENAME%.zip}"
+  fi
+
+  if [ -f "$DOWNLOAD_DIR/$BINARY_NAME" ]; then
+    mv "$DOWNLOAD_DIR/$BINARY_NAME" "$INSTALL_DIR/pactup"
+  else
+    mv "$DOWNLOAD_DIR/$FILENAME/$BINARY_NAME" "$INSTALL_DIR/pactup"
+  fi
+
+  chmod u+x "$INSTALL_DIR/pactup"
 }
 
 check_dependencies() {
@@ -137,14 +151,12 @@ check_dependencies() {
     SHOULD_EXIT="true"
   fi
 
-  if [ "$USE_HOMEBREW" = "true" ]; then
-    echo -n "Checking availability of Homebrew (brew)... "
-    if hash brew 2>/dev/null; then
-      echo "OK!"
-    else
-      echo "Missing!"
-      SHOULD_EXIT="true"
-    fi
+  echo -n "Checking availability of tar... "
+  if hash tar 2>/dev/null; then
+    echo "OK!"
+  else
+    echo "Missing!"
+    SHOULD_EXIT="true"
   fi
 
   if [ "$SHOULD_EXIT" = "true" ]; then
