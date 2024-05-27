@@ -184,12 +184,12 @@ setup_shell() {
     echo ""
     echo '  # pactup'
     echo '  export PATH="'"$INSTALL_DIR"':$PATH"'
-    echo '  eval "`pactup env`"'
+    echo '  eval "`pactup env --use-on-cd`"'
 
     echo '' >>$CONF_FILE
     echo '# pactup' >>$CONF_FILE
     echo 'export PATH="'$INSTALL_DIR':$PATH"' >>$CONF_FILE
-    echo 'eval "`pactup env`"' >>$CONF_FILE
+    echo 'eval "`pactup env --use-on-cd`"' >>$CONF_FILE
 
   elif [ "$CURRENT_SHELL" = "fish" ]; then
     CONF_FILE=$HOME/.config/fish/conf.d/pactup.fish
@@ -198,12 +198,12 @@ setup_shell() {
     echo ""
     echo '  # pactup'
     echo '  set PATH "'"$INSTALL_DIR"'" $PATH'
-    echo '  pactup env | source'
+    echo '  pactup env --use-on-cd | source'
 
     echo '' >>$CONF_FILE
     echo '# pactup' >>$CONF_FILE
     echo 'set PATH "'"$INSTALL_DIR"'" $PATH' >>$CONF_FILE
-    echo 'pactup env | source' >>$CONF_FILE
+    echo 'pactup env --use-on-cd | source' >>$CONF_FILE
 
   elif [ "$CURRENT_SHELL" = "bash" ]; then
     if [ "$OS" = "Darwin" ]; then
@@ -216,12 +216,12 @@ setup_shell() {
     echo ""
     echo '  # pactup'
     echo '  export PATH="'"$INSTALL_DIR"':$PATH"'
-    echo '  eval "`pactup env`"'
+    echo '  eval "`pactup env --use-on-cd`"'
 
     echo '' >>$CONF_FILE
     echo '# pactup' >>$CONF_FILE
     echo 'export PATH="'"$INSTALL_DIR"':$PATH"' >>$CONF_FILE
-    echo 'eval "`pactup env`"' >>$CONF_FILE
+    echo 'eval "`pactup env --use-on-cd`"' >>$CONF_FILE
 
   else
     echo "Could not infer shell type. Please set up manually."
