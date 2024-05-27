@@ -9,7 +9,7 @@ GAL_PROMPT_PREFIX="\e[34m✡\e[m  "
 function type() {
   printf $GAL_PROMPT_PREFIX
   echo -n " "
-  echo $* | npx tsx scripts/type-letters.ts
+  echo $* | npx tsx scripts/type-letters.mts
 }
 
 type 'eval "$(pactup env)"'

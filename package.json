@@ -18,8 +18,8 @@
     "README.md"
   ],
   "scripts": {
-    "version:prepare": "changeset version && tsx ./scripts/prepare-version.ts",
-    "generate-command-docs": "tsx ./scripts/print-command-docs.ts",
+    "version:prepare": "changeset version && tsx ./scripts/prepare-version.mts",
+    "generate-command-docs": "tsx ./scripts/print-command-docs.mts",
     "generate-npm-packages": "node ./scripts/generate-npm-packages.mjs"
   },
   "changelog": {
