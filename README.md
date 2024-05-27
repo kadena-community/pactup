@@ -189,7 +189,7 @@ You can replace `%CMDER_ROOT%` with any other convenient path too.
 
 ## [Usage](./docs/commands.md)
 
-[See the available commands for an extended usage documentation](./docs/commands.md)
+[See the available commands for an extended usage documentation](./docs/command.md)
 
 ## Contributing
 
