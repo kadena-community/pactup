@@ -105,7 +105,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pactup-linux
-          path: target/x86_64-unknown-linux-musl/release/pactup
+          path: target/x86_64-unknown-linux-gnu/release/pactup
   # Unfortunatly, No pact binary is available for linux arm
   # build_static_arm_binary:
   #   name: "Build ARM binary"
