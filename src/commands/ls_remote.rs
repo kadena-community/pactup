@@ -45,8 +45,8 @@ impl super::command::Command for LsRemote {
       stable_versions.extend(nightly_versions);
       stable_versions
     } else {
-      let stable_versions = remote_pact_index::list(&config.pact_4x_repo)?;
-      stable_versions
+      
+      remote_pact_index::list(&config.pact_4x_repo)?
     };
 
     if let Some(filter) = &self.filter {
@@ -70,14 +70,14 @@ impl super::command::Command for LsRemote {
     for version in &all_versions {
       print!("{}", version.tag_name);
       if version.draft {
-        print!("{}", format!(" (draft)").cyan());
+        print!("{}", " (draft)".to_string().cyan());
       }
       if version.prerelease {
-        print!("{}", format!(" (prerelease)").cyan());
+        print!("{}", " (prerelease)".to_string().cyan());
       }
 
       if version.tag_name.is_nightly() {
-        print!("{}", format!(" (nightly)").cyan());
+        print!("{}", " (nightly)".to_string().cyan());
       }
 
       println!();
