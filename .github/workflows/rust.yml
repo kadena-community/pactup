@@ -80,11 +80,9 @@ jobs:
         run: cargo build --release
         env:
           LZMA_API_STATIC: "true"
-      - name: Strip binary from debug symbols
-        run: strip target/release/pactup
       - name: List dynamically linked libraries
         run: otool -L target/release/pactup
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: pactup-macos
           path: target/release/pactup
@@ -96,22 +94,21 @@ jobs:
       - uses: hecrj/setup-rust-action@v2
         with:
           rust-version: ${{env.RUST_VERSION}}
-          targets: x86_64-unknown-linux-gnu
       - uses: Swatinem/rust-cache@v2
         with:
           key: static-linux-binary
 
       - uses: actions/checkout@v4
       - name: Build release binary
-        run: cargo build --release --target x86_64-unknown-linux-gnu
+        run: cargo build --release
         env:
           RUSTFLAGS: "-C target-feature=+crt-static"
       - name: Strip binary from debug symbols
-        run: strip target/x86_64-unknown-linux-gnu/release/pactup
-      - uses: actions/upload-artifact@v3
+        run: strip target/release/pactup
+      - uses: actions/upload-artifact@v4
         with:
           name: pactup-linux
-          path: target/x86_64-unknown-linux-gnu/release/pactup
+          path: target/release/pactup
   # Unfortunatly, No pact binary is available for linux arm
   # build_static_arm_binary:
   #   name: "Build ARM binary"
