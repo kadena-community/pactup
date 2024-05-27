@@ -1,0 +1,87 @@
+name: Installation script
+on:
+  pull_request:
+    paths:
+      - scripts/install.sh
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/install.sh
+
+jobs:
+  test_against_latest_release_arm:
+    strategy:
+      matrix:
+        docker_image:
+          - arm64v8/ubuntu
+          - arm32v7/ubuntu
+    name: Test against latest release (ARM)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up QEMU
+        id: qemu
+        uses: docker/setup-qemu-action@v2
+      - uses: actions/checkout@v3
+      - name: Run installation script in Docker
+        run: |
+          docker run --rm -v $(pwd):$(pwd) -e "RUST_LOG=pactuo=debug" --workdir $(pwd) ${{matrix.docker_image}} bash -c '
+            set -e
+
+            apt update && apt install -y unzip curl libatomic1
+
+            echo "-------------------------------------"
+            echo "Installing for CPU arch: $(uname -m)"
+
+            bash ./scripts/install.sh
+
+            echo "pactup --version"
+            ~/.local/share/pactup/pactup --version
+
+            echo "eval pactup env"
+            eval "$(~/.local/share/pactup/pactup env)"
+
+            echo "pactup install"
+            ~/.local/share/pactup/pactup install 12
+
+            echo "node -v"
+            ~/.local/share/pactup/pactup exec --using=12 -- node -v
+          '
+
+  test_against_latest_release:
+    name: Test against latest release
+    strategy:
+      matrix:
+        shell: [fish, zsh, bash]
+        setup:
+          - os: ubuntu
+            script_arguments: ""
+          - os: macos
+            script_arguments: ""
+          - os: macos
+            script_arguments: "--force-no-brew"
+    runs-on: ${{ matrix.setup.os }}-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: "sudo apt-get install -y ${{ matrix.shell }}"
+        name: Install ${{matrix.shell}} using apt-get
+        if: matrix.setup.os == 'ubuntu'
+      - run: "brew update && brew install ${{ matrix.shell }}"
+        name: Update formulae and install ${{matrix.shell}} using Homebrew
+        if: matrix.setup.os == 'macos'
+      - run: |
+          if [ -f ~/.bashrc ]; then
+            cp ~/.bashrc ~/.bashrc.bak
+            echo 'echo hello world' > ~/.bashrc
+            echo '. ~/.bashrc.bak' >> ~/.bashrc
+          fi
+
+          if [ -f ~/.zshrc ]; then
+            echo 'echo hello world' > ~/.zshrc
+            echo '. ~/.zshrc.bak' >> ~/.zshrc
+          fi
+        name: reset shell profiles
+      - run: "env SHELL=$(which ${{ matrix.shell }}) bash ./scripts/install.sh ${{ matrix.setup.script_arguments }}"
+        name: Run the installation script
+      - run: ./scripts/test_installation_script.sh ${{ matrix.shell }}
+        name: "Test installation script"

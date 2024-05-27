@@ -1,0 +1,56 @@
+use std::fmt::{Debug, Display};
+use std::path::Path;
+
+use clap::ValueEnum;
+
+pub trait Shell: Debug {
+  fn path(&self, path: &Path) -> anyhow::Result<String>;
+  fn set_env_var(&self, name: &str, value: &str) -> String;
+  fn use_on_cd(&self, config: &crate::config::PactupConfig) -> anyhow::Result<String>;
+  fn rehash(&self) -> Option<String> {
+    None
+  }
+  fn to_clap_shell(&self) -> clap_complete::Shell;
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum Shells {
+  Bash,
+  Zsh,
+  Fish,
+  PowerShell,
+  #[cfg(windows)]
+  Cmd,
+}
+
+impl Display for Shells {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      Shells::Bash => write!(f, "bash"),
+      Shells::Zsh => write!(f, "zsh"),
+      Shells::Fish => write!(f, "fish"),
+      Shells::PowerShell => write!(f, "powershell"),
+      #[cfg(windows)]
+      Shells::Cmd => write!(f, "cmd"),
+    }
+  }
+}
+
+impl From<Shells> for Box<dyn Shell> {
+  fn from(shell: Shells) -> Box<dyn Shell> {
+    match shell {
+      Shells::Zsh => Box::from(super::zsh::Zsh),
+      Shells::Bash => Box::from(super::bash::Bash),
+      Shells::Fish => Box::from(super::fish::Fish),
+      Shells::PowerShell => Box::from(super::powershell::PowerShell),
+      #[cfg(windows)]
+      Shells::Cmd => Box::from(super::windows_cmd::WindowsCmd),
+    }
+  }
+}
+
+impl From<Box<dyn Shell>> for clap_complete::Shell {
+  fn from(shell: Box<dyn Shell>) -> Self {
+    shell.to_clap_shell()
+  }
+}

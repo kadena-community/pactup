@@ -1,0 +1,70 @@
+[package]
+name = "pactup"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0"
+publish = false
+repository = "https://github.com/kadena-community/pactup"
+description = "Fast and simple Pact version manager"
+build = "build.rs"
+
+[dependencies]
+anyhow = { version = "1.0", features = ["backtrace"] }
+chrono = { version = "0.4", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+reqwest = { version = "0.12", features = [
+  "blocking",
+  "brotli",
+  "json",
+  "rustls-tls",
+  "rustls-tls-native-roots",
+], default-features = false }
+url = { version = "2.5", features = ["serde"] }
+clap = { version = "4.5", features = ["derive", "env"] }
+clap_complete = "4.5"
+colored = "2.0"
+dirs = "5.0"
+encoding_rs_io = "0.1"
+env_logger = "0.11"
+indoc = "2.0"
+log = "0.4"
+node-semver = "2.1"
+sysinfo = "0.30"
+tar = "0.4"
+tempfile = "3.6"
+thiserror = "1.0"
+xz2 = "0.1"
+zip = "2.0"
+duct = "0.13"
+pretty_assertions = "1.4"
+test-log = "0.2"
+flate2 = "1.0"
+walkdir = "2.5"
+indicatif = { version = "0.17", features = ["improved_unicode"] }
+
+
+[dev-dependencies]
+pretty_assertions = "1.4"
+duct = "0.13"
+test-log = "0.2"
+http = "1.1"
+
+[build-dependencies]
+embed-resource = "2.4"
+
+
+[profile.dev]
+codegen-units = 16 # debug build will cause runtime panic if codegen-unints is default
+debug = 2
+incremental = true
+panic = "abort"
+
+
+[profile.release]
+codegen-units = 1
+debug = false
+lto = "thin"      # Performs “thin” LTO. This is similar to “fat”, but takes substantially less time to run while still achieving performance gains similar to “fat”.
+opt-level = 3
+panic = "abort"
+strip = true

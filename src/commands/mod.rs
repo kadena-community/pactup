@@ -1,0 +1,13 @@
+pub mod alias;
+pub mod command;
+pub mod completions;
+pub mod current;
+pub mod default;
+pub mod env;
+pub mod exec;
+pub mod install;
+pub mod ls_local;
+pub mod ls_remote;
+pub mod unalias;
+pub mod uninstall;
+pub mod r#use;
