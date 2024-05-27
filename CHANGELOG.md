@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.3
+
+### Patch Changes
+
+- [`3eb98d6`](https://github.com/kadena-community/pactup/commit/3eb98d65eeeb41c62304031085d2019df47f03a4) Thanks [@salamaashoush](https://github.com/salamaashoush)! - disable unzip
+
 ## 0.2.2
 
 ### Patch Changes
