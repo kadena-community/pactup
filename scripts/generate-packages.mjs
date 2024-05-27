@@ -30,7 +30,7 @@ function generateNativePackage(target) {
 
   // Create the package directory
   console.log(`Create directory ${packageRoot}`);
-  fs.mkdirSync(packageRoot);
+  fs.mkdirSync(packageRoot, { recursive: true });
 
   // Generate the package.json manifest
   const { version, author, license, homepage, bugs, repository } = rootManifest;
