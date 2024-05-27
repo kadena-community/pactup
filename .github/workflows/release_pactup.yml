@@ -143,12 +143,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - name: debug
-        run: ls -la
-      - name: Unzip
-        uses: montudor/action-zip@v1
-        with:
-          args: unzip -qq *.zip -d .
+      # windows binaries are zipped
+      # - name: Unzip
+      #   uses: montudor/action-zip@v1
+      #   with:
+      #     args: unzip -qq *.zip -d .
 
       - name: Untar
         run: ls *.gz | xargs -i tar xf {}
