@@ -125,7 +125,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: build
+    needs: [build, check]
     runs-on: ubuntu-latest
     permissions:
       contents: write # for softprops/action-gh-release@v1
@@ -184,7 +184,7 @@ jobs:
         run: sleep 180s
 
   smoke:
-    needs: publish
+    needs: [publish, check]
     strategy:
       matrix:
         include:
