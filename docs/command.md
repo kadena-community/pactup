@@ -353,7 +353,7 @@ Options:
           [env: PACTUP_PACT_DIR]
 
       --use-on-cd
-          Print the script to change Node versions every directory change
+          Print the script to change Pact versions every directory change
 
       --log-level <LOG_LEVEL>
           The log level of pactup commands

@@ -84,7 +84,7 @@ impl Command for Install {
           })?;
 
         debug!(
-          "Resolved {} into Node version {}",
+          "Resolved {} into Pact version {}",
           Version::Semver(actual_version).v_str().cyan(),
           picked_release.tag_name.v_str().cyan()
         );
@@ -100,7 +100,7 @@ impl Command for Install {
           })?;
 
         debug!(
-          "Resolved {} into Node version {}",
+          "Resolved {} into Pact version {}",
           Version::Nightly(nightly_tag).v_str().cyan(),
           picked_release.tag_name.v_str().cyan(),
         );
@@ -254,7 +254,7 @@ mod tests {
     .expect("Can't install");
 
     let latest_release =
-      remote_pact_index::latest(&config.pact_4x_repo).expect("Can't get node version list");
+      remote_pact_index::latest(&config.pact_4x_repo).expect("Can't get pact version list");
     let latest_version = latest_release.tag_name.clone();
     assert!(config.installations_dir().exists());
     assert!(config
@@ -281,7 +281,7 @@ mod tests {
     .expect("Can't install");
 
     let latest_release =
-      remote_pact_index::latest(&config.pact_5x_repo).expect("Can't get node version list");
+      remote_pact_index::latest(&config.pact_5x_repo).expect("Can't get pact version list");
     let latest_version = latest_release.tag_name.clone();
     assert!(config.installations_dir().exists());
     assert!(config

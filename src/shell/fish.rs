@@ -38,7 +38,7 @@ impl Shell for Fish {
     };
     Ok(formatdoc!(
       r#"
-                function __pactup_autoload_hook --on-variable PWD --description 'Change Node version on directory change'
+                function __pactup_autoload_hook --on-variable PWD --description 'Change Pact version on directory change'
                     status --is-command-substitution; and return
                     {autoload_hook}
                 end

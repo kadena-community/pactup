@@ -22,7 +22,7 @@ pub struct Env {
   /// Deprecated. This is the default now.
   #[clap(long, hide = true)]
   multi: bool,
-  /// Print the script to change Node versions every directory change
+  /// Print the script to change Pact versions every directory change
   #[clap(long)]
   use_on_cd: bool,
 }
