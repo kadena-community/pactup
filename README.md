@@ -32,9 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/kadena-community/pactup/main/script
 
 #### Upgrade
 
-On macOS, it is as simple as `brew upgrade pactup`.
-
-On other operating systems, upgrading `pactup` is almost the same as installing it. To prevent duplication in your shell config file add `--skip-shell` to install command.
+Upgrading `pactup` is almost the same as installing it. To prevent duplication in your shell config file add `--skip-shell` to install command.
 
 #### Parameters
 
@@ -57,36 +55,6 @@ curl -fsSL https://raw.githubusercontent.com/kadena-community/pactup/main/script
 ```
 
 ### Manually
-
-#### Using Homebrew (macOS/Linux)
-
-```sh
-brew install pactup
-```
-
-Then, [set up your shell for pactup](#shell-setup)
-
-#### Using Winget (Windows)
-
-```sh
-winget install Schniz.pactup
-```
-
-#### Using Scoop (Windows)
-
-```sh
-scoop install pactup
-```
-
-Then, [set up your shell for pactup](#shell-setup)
-
-#### Using Chocolatey (Windows)
-
-```sh
-choco install pactup
-```
-
-Then, [set up your shell for pactup](#shell-setup)
 
 #### Using Cargo (Linux/macOS/Windows)
 
@@ -132,12 +100,12 @@ This is done by evaluating the output of `pactup env`.
 > Check out the [Configuration](./docs/configuration.md) section to enable highly
 > recommended features, like automatic version switching.
 
-Adding a `.node-version` to your project is as simple as:
+Adding a `.pact-version` to your project is as simple as:
 
 ```bash
-$ node --version
-v14.18.3
-$ node --version > .node-version
+$ pact --version
+pact version 4.11.0
+$ echo "4.11" > .pact-version
 ```
 
 Check out the following guides for the shell you use:
