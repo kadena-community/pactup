@@ -21,3 +21,6 @@ feature_tests/.tmp
 .vercel
 .proxy
 npm/
+pactup-darwin-*
+pactup-linux-*
+pactup-win-*

@@ -71,7 +71,8 @@ function generateNativePackage(target) {
 }
 
 function writeManifest() {
-  const manifestPath = resolve(PACKAGES_ROOT, PACTUP_BIN_NAME, "package.json");
+  // const manifestPath = resolve(PACKAGES_ROOT, PACTUP_BIN_NAME, "package.json");
+  const manifestPath = resolve(MANIFEST_PATH);
 
   const manifestData = JSON.parse(
     fs.readFileSync(manifestPath).toString("utf-8")
@@ -92,8 +93,8 @@ function writeManifest() {
 
 // NOTE: Must update npm/pactup/bin/pactup
 const TARGETS = [
-  "win32-x64",
-  "win32-arm64",
+  // "win32-x64",
+  // "win32-arm64",
   "linux-x64-gnu",
   "linux-arm64-gnu",
   "linux-x64-musl",
