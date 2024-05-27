@@ -25,8 +25,10 @@ asciinema rec \
   --cols 70 \
   --rows 17 \
   "$RECORDING_PATH"
+
+echo "Recording saved to $RECORDING_PATH"
 sed "s@$TEMP_DIR@~@g" "$RECORDING_PATH" |
-  pnpm svg-term \
+  npx svg-term-cli \
     --window \
     --out "docs/pactup.svg" \
     --height=17 \
