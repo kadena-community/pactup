@@ -198,6 +198,7 @@ pub fn latest(repo_url: &String) -> Result<Release, crate::http::Error> {
   Ok(value)
 }
 
+#[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
   use super::*;

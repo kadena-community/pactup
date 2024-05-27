@@ -204,6 +204,7 @@ pub enum Error {
   TooManyVersionsProvided,
 }
 
+#[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -238,7 +239,6 @@ mod tests {
   }
 
   // latest 4.12 doesn't have macos binaries
-  #[cfg(target_os = "linux")]
   #[test]
   fn test_install_latest() {
     let base_dir = tempfile::tempdir().unwrap();
@@ -265,7 +265,6 @@ mod tests {
       .unwrap()
       .exists());
   }
-
   #[test]
   fn test_install_nightly() {
     let base_dir = tempfile::tempdir().unwrap();
