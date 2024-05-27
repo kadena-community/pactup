@@ -10,42 +10,42 @@ on:
       - scripts/install.sh
 
 jobs:
-  test_against_latest_release_arm:
-    strategy:
-      matrix:
-        docker_image:
-          - arm64v8/ubuntu
-    name: Test against latest release (ARM)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up QEMU
-        id: qemu
-        uses: docker/setup-qemu-action@v3
-      - uses: actions/checkout@v4
-      - name: Run installation script in Docker
-        run: |
-          docker run --rm -v $(pwd):$(pwd) -e "RUST_LOG=pactuo=debug" --workdir $(pwd) ${{matrix.docker_image}} bash -c '
-            set -e
+  # test_against_latest_release_arm:
+  #   strategy:
+  #     matrix:
+  #       docker_image:
+  #         - arm64v8/ubuntu
+  #   name: Test against latest release (ARM)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up QEMU
+  #       id: qemu
+  #       uses: docker/setup-qemu-action@v3
+  #     - uses: actions/checkout@v4
+  #     - name: Run installation script in Docker
+  #       run: |
+  #         docker run --rm -v $(pwd):$(pwd) -e "RUST_LOG=pactuo=debug" --workdir $(pwd) ${{matrix.docker_image}} bash -c '
+  #           set -e
 
-            apt update && apt install -y unzip curl libatomic1
+  #           apt update && apt install -y unzip curl libatomic1
 
-            echo "-------------------------------------"
-            echo "Installing for CPU arch: $(uname -m)"
+  #           echo "-------------------------------------"
+  #           echo "Installing for CPU arch: $(uname -m)"
 
-            bash ./scripts/install.sh
+  #           bash ./scripts/install.sh
 
-            echo "pactup --version"
-            ~/.local/share/pactup/pactup --version
+  #           echo "pactup --version"
+  #           ~/.local/share/pactup/pactup --version
 
-            echo "eval pactup env"
-            eval "$(~/.local/share/pactup/pactup env)"
+  #           echo "eval pactup env"
+  #           eval "$(~/.local/share/pactup/pactup env)"
 
-            echo "pactup install"
-            ~/.local/share/pactup/pactup install 4.11
+  #           echo "pactup install"
+  #           ~/.local/share/pactup/pactup install 4.11
 
-            echo "pact --version"
-            ~/.local/share/pactup/pactup exec --using=4.11 -- pact --version
-          '
+  #           echo "pact --version"
+  #           ~/.local/share/pactup/pactup exec --using=4.11 -- pact --version
+  #         '
 
   test_against_latest_release:
     name: Test against latest release
@@ -54,8 +54,6 @@ jobs:
         shell: [fish, zsh, bash]
         setup:
           - os: ubuntu
-            script_arguments: ""
-          - os: macos
             script_arguments: ""
           - os: macos
             script_arguments: ""

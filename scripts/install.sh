@@ -227,6 +227,8 @@ setup_shell() {
   echo "In order to apply the changes, open a new terminal or run the following command:"
   echo ""
   echo "  source $CONF_FILE"
+  echo ""
+  echo "After that, enjoy using pactup! 🎉"
 }
 
 parse_args "$@"
