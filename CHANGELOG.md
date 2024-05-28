@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.10
+
+### Patch Changes
+
+- [`4f9080d`](https://github.com/kadena-community/pactup/commit/4f9080d0013969b2b6caa0fb3207a0417d8da2a7) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix: allow alias for which command and fetch nightly by tag
+
 ## 0.2.9
 
 ### Patch Changes
