@@ -50,10 +50,10 @@ impl Command for Use {
         VersionFileStrategy::Recursive => InferVersionError::Recursive,
       })
       .map_err(|source| Error::CantInferVersion { source })?;
+
     let current_version = requested_version.to_version(&all_versions, config);
     let (message, version_path) = if let Some(version) = current_version {
       let version_path = config.installations_dir().join(version.to_string());
-      // .join("installation");
       let message = format!("Using Pact {}", version.to_string().cyan());
       (message, version_path)
     } else if let UserVersion::Full(Version::Bypassed) = requested_version {

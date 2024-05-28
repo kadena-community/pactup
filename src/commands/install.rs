@@ -94,8 +94,8 @@ impl Command for Install {
         return Err(Error::UninstallableVersion { version: v });
       }
       UserVersion::Full(Version::Nightly(nightly_tag)) => {
-        let picked_release =
-          remote_pact_index::latest(&config.pact_5x_repo).map_err(|_| Error::CantFindNightly {
+        let picked_release = remote_pact_index::get_by_tag(&config.pact_5x_repo, &nightly_tag)
+          .map_err(|_| Error::CantFindNightly {
             nightly_tag: nightly_tag.clone(),
           })?;
 
@@ -155,10 +155,7 @@ impl Command for Install {
     };
 
     if let UserVersion::Full(Version::Nightly(nightly_type)) = current_version {
-      if nightly_type == "nightly" {
-        return Ok(());
-      }
-      let alias_name = "nightly".to_string();
+      let alias_name = nightly_type.to_string();
       debug!(
         "Tagging {} as alias for {}",
         alias_name.cyan(),

@@ -36,8 +36,6 @@ pub fn choose_version_for_user_input<'a>(
   let result = if let Some(version) = current_version {
     info!("Using Pact {}", version.to_string().cyan());
     let path = config.installations_dir().join(version.to_string());
-    // .join("installation");
-
     Some(ApplicableVersion {
       path,
       version: version.clone(),

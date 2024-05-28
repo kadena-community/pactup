@@ -68,11 +68,15 @@ impl Version {
   pub fn installation_path(&self, config: &config::PactupConfig) -> std::path::PathBuf {
     match self {
       Self::Bypassed => system_version::path(),
-      v @ (Self::Nightly(_) | Self::Alias(_) | Self::Latest) => {
-        config.aliases_dir().join(v.alias_name().unwrap())
-      }
+      v @ (Self::Alias(_) | Self::Latest) => config.aliases_dir().join(v.alias_name().unwrap()),
       v @ Self::Semver(_) => config.installations_dir().join(v.v_str()),
-      // .join("installation"),
+      v @ Self::Nightly(_) => {
+        if config.installations_dir().join(v.v_str()).exists() {
+          config.installations_dir().join(v.v_str())
+        } else {
+          config.aliases_dir().join(v.alias_name().unwrap())
+        }
+      }
     }
   }
 

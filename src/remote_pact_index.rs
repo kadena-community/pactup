@@ -198,6 +198,17 @@ pub fn latest(repo_url: &String) -> Result<Release, crate::http::Error> {
   Ok(value)
 }
 
+/// Prints
+/// ```rust
+/// use crate::remote_pact_index::get_by_tag;
+///
+pub fn get_by_tag(repo_url: &String, tag: &String) -> Result<Release, crate::http::Error> {
+  let index_json_url = format!("https://api.github.com/repos/{repo_url}/releases/tags/{tag}");
+  let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
+  let value: Release = resp.json()?;
+  Ok(value)
+}
+
 #[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
