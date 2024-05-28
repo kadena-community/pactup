@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.9
+
+### Patch Changes
+
+- [`21d6fc5`](https://github.com/kadena-community/pactup/commit/21d6fc558a40b523e9ff555e064d5e89a9332248) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix: print correct version when using current subcommand
+
 ## 0.2.8
 
 ### Patch Changes

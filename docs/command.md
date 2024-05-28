@@ -615,6 +615,9 @@ Print the current Pact version
 Usage: pactup current [OPTIONS]
 
 Options:
+  -p, --path
+
+
       --pact-4x-repo <PACT_4X_REPO>
           <https://github.com/kadena-io/pact>
 
