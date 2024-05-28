@@ -133,12 +133,11 @@ impl Command for Install {
     // Automatically swap Apple Silicon to x64 arch for appropriate versions.
     let version = &release.tag_name;
     let safe_arch = get_safe_arch(&config.arch, version);
-    let version_str = format!("Pact {}", &version);
     outln!(
       config,
       Info,
       "Installing {} ({})",
-      version_str.cyan(),
+      format!("Pact {}", &version).cyan(),
       safe_arch.to_string()
     );
     match install_pact_dist(
@@ -156,7 +155,10 @@ impl Command for Install {
     };
 
     if let UserVersion::Full(Version::Nightly(nightly_type)) = current_version {
-      let alias_name = Version::Nightly(nightly_type).v_str();
+      if nightly_type == "nightly" {
+        return Ok(());
+      }
+      let alias_name = "nightly".to_string();
       debug!(
         "Tagging {} as alias for {}",
         alias_name.cyan(),

@@ -11,3 +11,4 @@ pub mod ls_remote;
 pub mod unalias;
 pub mod uninstall;
 pub mod r#use;
+pub mod which;

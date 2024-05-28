@@ -69,6 +69,10 @@ pub enum SubCommand {
   /// > is pointing to, along with the other aliases that point to the same version.
   #[clap(name = "uninstall", bin_name = "uninstall")]
   Uninstall(commands::uninstall::Uninstall),
+
+  /// Print the path to installed Pact version
+  #[clap(name = "which", bin_name = "which")]
+  Which(commands::which::Which),
 }
 
 impl SubCommand {
@@ -86,6 +90,7 @@ impl SubCommand {
       Self::Exec(cmd) => cmd.call(config),
       Self::Uninstall(cmd) => cmd.call(config),
       Self::Unalias(cmd) => cmd.call(config),
+      Self::Which(cmd) => cmd.call(config),
     }
   }
 }

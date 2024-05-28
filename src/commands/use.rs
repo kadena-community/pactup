@@ -51,7 +51,6 @@ impl Command for Use {
       })
       .map_err(|source| Error::CantInferVersion { source })?;
     let current_version = requested_version.to_version(&all_versions, config);
-
     let (message, version_path) = if let Some(version) = current_version {
       let version_path = config.installations_dir().join(version.to_string());
       // .join("installation");
