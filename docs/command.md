@@ -18,6 +18,7 @@ Commands:
   current      Print the current Pact version
   exec         Run a command within pactup context
   uninstall    Uninstall a Pact version
+  which        Print the path to installed Pact version
   help         Print this message or the help of the given subcommand(s)
 
 Options:
@@ -615,6 +616,9 @@ Print the current Pact version
 Usage: pactup current [OPTIONS]
 
 Options:
+  -p, --path
+
+
       --pact-4x-repo <PACT_4X_REPO>
           <https://github.com/kadena-io/pact>
 
@@ -729,6 +733,61 @@ Uninstall a Pact version
 > Warning: when providing an alias, it will remove the Pact version the alias > is pointing to, along with the other aliases that point to the same version.
 
 Usage: pactup uninstall [OPTIONS] [VERSION]
+
+Arguments:
+  [VERSION]
+
+
+Options:
+      --pact-4x-repo <PACT_4X_REPO>
+          <https://github.com/kadena-io/pact>
+
+          [env: PACTUP_PACT4X_REPO]
+          [default: kadena-io/pact]
+
+      --pact-5x-repo <PACT_5X_REPO>
+          <https://github.com/kadena-io/pact>
+
+          [env: PACTUP_PACT5X_REPO]
+          [default: kadena-io/pact-5]
+
+      --pact-dir <BASE_DIR>
+          The root directory of pact installations
+
+          [env: PACTUP_PACT_DIR]
+
+      --log-level <LOG_LEVEL>
+          The log level of pactup commands
+
+          [env: PACTUP_LOGLEVEL]
+          [default: info]
+          [possible values: quiet, error, info]
+
+      --arch <ARCH>
+          Override the architecture of the installed pact binary. Defaults to arch of pactup binary
+
+          [env: PACTUP_ARCH]
+
+      --version-file-strategy <VERSION_FILE_STRATEGY>
+          A strategy for how to resolve the Pact version. Used whenever `pactup use` or `pactup install` is called without a version, or when `--use-on-cd` is configured on evaluation
+
+          [env: PACTUP_VERSION_FILE_STRATEGY]
+          [default: local]
+
+          Possible values:
+          - local:     Use the local version of Node defined within the current directory
+          - recursive: Use the version of Node defined within the current directory and all parent directories
+
+  -h, --help
+          Print help (see a summary with '-h')
+```
+
+# `pactup which`
+
+```
+Print the path to installed Pact version
+
+Usage: pactup which [OPTIONS] [VERSION]
 
 Arguments:
   [VERSION]
