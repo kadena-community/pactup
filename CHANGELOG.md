@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.12
+
+### Patch Changes
+
+- [`8eb11a8`](https://github.com/kadena-community/pactup/commit/8eb11a8c4acce7794708094fe14b28a95f06e005) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix: align crates io and npm versions
+
 ## 0.2.11
 
 ### Patch Changes
