@@ -48,7 +48,6 @@ pub trait Extract {
 
 pub enum ArchiveType {
   TarGz,
-  TarXz,
   Zip,
 }
 
@@ -63,7 +62,6 @@ impl ArchiveType {
       })?;
     match archive_type {
       "gz" => Ok(Self::TarGz),
-      "xz" => Ok(Self::TarXz),
       "zip" => Ok(Self::Zip),
       _ => Err(Error::UnknownArchiveType {
         content_type: archive_type.to_string(),

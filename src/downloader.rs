@@ -45,7 +45,6 @@ fn extract_archive_into(
 ) -> Result<(), Error> {
   let _ = match ArchiveType::from(download_url)? {
     ArchiveType::TarGz => archive::TarGz::new(response).extract_into(path),
-    ArchiveType::TarXz => archive::TarXz::new(response).extract_into(path),
     ArchiveType::Zip => archive::Zip::new(response).extract_into(path),
   };
   Ok(())
