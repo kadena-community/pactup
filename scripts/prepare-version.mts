@@ -3,7 +3,6 @@
 import fs from "fs";
 import cp from "child_process";
 import cmd from "cmd-ts";
-import toml from "toml";
 import assert from "assert";
 
 const CARGO_TOML_PATH = new URL("../Cargo.toml", import.meta.url).pathname;
@@ -47,14 +46,14 @@ async function getPackageVersion() {
 
 function updateCargoToml(nextVersion: string) {
   const cargoToml = fs.readFileSync(CARGO_TOML_PATH, "utf8");
-  const cargoTomlContents = toml.parse(cargoToml);
-  const currentVersion = cargoTomlContents.package.version;
-
+  // replace old  version with new version
+  const pattern = /(\[package\][\s\S]*?version\s*=\s*)("[^"]*")/;
+  console.log(cargoToml.match(pattern));
   const newToml = cargoToml.replace(
-    `version = "${currentVersion}"`,
-    `version = "${nextVersion}"`
+    pattern,
+    (_, p1) => `${p1}"${nextVersion}"`
   );
-
+  console.log(newToml);
   if (newToml === cargoToml) {
     console.error("Cargo.toml didn't change, error!");
     process.exitCode = 1;

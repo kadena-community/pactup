@@ -7,6 +7,8 @@
 <div align="center">
   <img src="./docs/pactup.svg" alt="Blazing fast!">
 </div>
+<span class="badge-npmversion"><a href="https://npmjs.org/package/pactup" title="View this project on NPM"><img src="https://img.shields.io/npm/v/pactup.svg" alt="NPM version" /></a></span>
+<span class="badge-crates"><a href="https://crates.io/crates/pactup" title="View this project on Crates.io"><img alt="Crates.io Version" src="https://img.shields.io/crates/v/pactup"></a></span>
 
 ## Features
 
@@ -56,6 +58,12 @@ curl -fsSL https://raw.githubusercontent.com//main/scripts/install.sh | bash -s 
 
 ```sh
 cargo install pactup
+```
+
+#### Using Npm (Linux/macOS/Windows)
+
+```sh
+npm install -g pactup
 ```
 
 Then, [set up your shell for pactup](#shell-setup)

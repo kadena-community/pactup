@@ -56,7 +56,6 @@
     "pv": "1.0.1",
     "shell-escape": "^0.2.0",
     "svg-term-cli": "2.1.1",
-    "toml": "^3.0.0",
     "tsx": "^4.11.0",
     "typescript": "^5.4.5"
   }
