@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.11
+
+### Patch Changes
+
+- [`d2fbeac`](https://github.com/kadena-community/pactup/commit/d2fbeac7b85101379fe3a4e7cf84a205dd219d90) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix: remove xz support
+
 ## 0.2.10
 
 ### Patch Changes
