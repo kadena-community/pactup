@@ -53,7 +53,6 @@ function updateCargoToml(nextVersion: string) {
     pattern,
     (_, p1) => `${p1}"${nextVersion}"`
   );
-  console.log(newToml);
   if (newToml === cargoToml) {
     console.error("Cargo.toml didn't change, error!");
     process.exitCode = 1;
@@ -61,7 +60,7 @@ function updateCargoToml(nextVersion: string) {
   }
 
   fs.writeFileSync(CARGO_TOML_PATH, newToml, "utf8");
-
+  console.log("Cargo.toml updated to version", nextVersion);
   return nextVersion;
 }
 
