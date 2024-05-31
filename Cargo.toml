@@ -1,10 +1,10 @@
 [package]
-name = "pactup"
-version = "0.2.10"
-edition = "2021"
-license = "GPL-3.0"
-publish = true
-repository = "https://github.com/kadena-community/pactup"
+name        = "pactup"
+version     = "0.2.10"
+edition     = "2021"
+license     = "GPL-3.0"
+publish     = true
+repository  = "https://github.com/kadena-community/pactup"
 description = "Fast and simple Pact version manager"
 
 [dependencies]
@@ -33,7 +33,6 @@ sysinfo = "0.30"
 tar = "0.4"
 tempfile = "3.6"
 thiserror = "1.0"
-xz2 = "0.1"
 zip = "2.0"
 duct = "0.13"
 pretty_assertions = "1.4"
@@ -45,32 +44,32 @@ indicatif = { version = "0.17", features = ["improved_unicode"] }
 
 [dev-dependencies]
 pretty_assertions = "1.4"
-duct = "0.13"
-test-log = "0.2"
-http = "1.1"
+duct              = "0.13"
+test-log          = "0.2"
+http              = "1.1"
 
 # [build-dependencies]
 # embed-resource = "2.4"
 
 [target.'cfg(windows)'.dependencies]
-csv = "1.2"
+csv      = "1.2"
 junction = "1.0"
 
 
 [profile.dev]
 codegen-units = 16 # debug build will cause runtime panic if codegen-unints is default
-debug = 2
-incremental = true
-panic = "abort"
+debug         = 2
+incremental   = true
+panic         = "abort"
 
 
 [profile.release]
 codegen-units = 1
-debug = false
-lto = "thin"      # Performs “thin” LTO. This is similar to “fat”, but takes substantially less time to run while still achieving performance gains similar to “fat”.
-opt-level = 3
-panic = "abort"
-strip = true
+debug         = false
+lto           = "thin" # Performs “thin” LTO. This is similar to “fat”, but takes substantially less time to run while still achieving performance gains similar to “fat”.
+opt-level     = 3
+panic         = "abort"
+strip         = true
 
 
 [package.metadata.cargo-shear]
