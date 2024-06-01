@@ -178,7 +178,7 @@ jobs:
           draft: true
           files: |
             pactup-*.tar.gz
-            pactup-*.zip
+            # pactup-*.zip
           fail_on_unmatched_files: true
 
       - name: wait 3 minutes for smoke test
