@@ -1,5 +1,13 @@
 # pactup
 
+## 0.2.13
+
+### Patch Changes
+
+- [`f1ed9ed`](https://github.com/kadena-community/pactup/commit/f1ed9ed19451412da2251148fe81ec27d9976bf0) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Support XDG convention on MacOS
+
+- [`f1ed9ed`](https://github.com/kadena-community/pactup/commit/f1ed9ed19451412da2251148fe81ec27d9976bf0) Thanks [@salamaashoush](https://github.com/salamaashoush)! - align some fixes with fnm
+
 ## 0.2.12
 
 ### Patch Changes
