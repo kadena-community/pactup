@@ -178,7 +178,7 @@ jobs:
           draft: true
           files: |
             pactup-*.tar.gz
-            # pactup-*.zip
+          # pactup-*.zip # windows
           fail_on_unmatched_files: true
 
       - name: wait 3 minutes for smoke test
@@ -189,7 +189,7 @@ jobs:
     strategy:
       matrix:
         include:
-          # - os: windows-latest
+          # - os: windows-latest # windows
           - os: ubuntu-latest
           - os: ubuntu-latest
             container: node:22-alpine # musl
