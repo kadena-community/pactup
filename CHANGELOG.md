@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.15
+
+### Patch Changes
+
+- [#24](https://github.com/kadena-community/pactup/pull/24) [`92294de`](https://github.com/kadena-community/pactup/commit/92294deb3dc01643af532aa697b9dea038cc28d7) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Fix release job again
+
 ## 0.2.14
 
 ### Patch Changes
