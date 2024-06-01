@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.14
+
+### Patch Changes
+
+- [#22](https://github.com/kadena-community/pactup/pull/22) [`ab34ca1`](https://github.com/kadena-community/pactup/commit/ab34ca1d34ce0a3f256ddc4db1016816470773ce) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix ci job
+
 ## 0.2.13
 
 ### Patch Changes
