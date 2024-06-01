@@ -34,7 +34,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -94,7 +94,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -157,7 +157,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -218,7 +218,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -285,7 +285,7 @@ Options:
       --silent-if-unchanged
           Don't output a message identifying the version being used if it will not change due to execution of this command
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -348,7 +348,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -407,7 +407,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -465,7 +465,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -520,7 +520,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -577,7 +577,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -631,7 +631,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -694,7 +694,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -751,7 +751,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
@@ -806,7 +806,7 @@ Options:
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
 
-      --pact-dir <BASE_DIR>
+      --pactup-dir <BASE_DIR>
           The root directory of pact installations
 
           [env: PACTUP_PACT_DIR]
