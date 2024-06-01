@@ -176,29 +176,29 @@ setup_shell() {
     CONF_FILE=${ZDOTDIR:-$HOME}/.zshrc
     ensure_containing_dir_exists "$CONF_FILE"
     echo "Installing for Zsh. Appending the following to $CONF_FILE:"
-    echo ""
-    echo '  # pactup'
-    echo '  export PATH="'"$INSTALL_DIR"':$PATH"'
-    echo '  eval "`pactup env --use-on-cd`"'
-
-    echo '' >>$CONF_FILE
-    echo '# pactup' >>$CONF_FILE
-    echo 'export PATH="'$INSTALL_DIR':$PATH"' >>$CONF_FILE
-    echo 'eval "`pactup env --use-on-cd`"' >>$CONF_FILE
+    {
+      echo ''
+      echo '# pactup'
+      echo 'PACTUP_PATH="'"$INSTALL_DIR"'"'
+      echo 'if [ -d "$PACTUP_PATH" ]; then'
+      echo '  export PATH="'$INSTALL_DIR':$PATH"'
+      echo '  eval "`pactup env --use-on-cd`"'
+      echo 'fi'
+    } | tee -a "$CONF_FILE"
 
   elif [ "$CURRENT_SHELL" = "fish" ]; then
     CONF_FILE=$HOME/.config/fish/conf.d/pactup.fish
     ensure_containing_dir_exists "$CONF_FILE"
     echo "Installing for Fish. Appending the following to $CONF_FILE:"
-    echo ""
-    echo '  # pactup'
-    echo '  set PATH "'"$INSTALL_DIR"'" $PATH'
-    echo '  pactup env --use-on-cd | source'
-
-    echo '' >>$CONF_FILE
-    echo '# pactup' >>$CONF_FILE
-    echo 'set PATH "'"$INSTALL_DIR"'" $PATH' >>$CONF_FILE
-    echo 'pactup env --use-on-cd | source' >>$CONF_FILE
+    {
+      echo ''
+      echo '# pactup'
+      echo 'set PACTUP_PATH "'"$INSTALL_DIR"'"'
+      echo 'if [ -d "$PACTUP_PATH" ]'
+      echo '  set PATH "$PACTUP_PATH" $PATH'
+      echo '  pactup env --use-on-cd | source'
+      echo 'end'
+    } | tee -a "$CONF_FILE"
 
   elif [ "$CURRENT_SHELL" = "bash" ]; then
     if [ "$OS" = "Darwin" ]; then
@@ -208,15 +208,15 @@ setup_shell() {
     fi
     ensure_containing_dir_exists "$CONF_FILE"
     echo "Installing for Bash. Appending the following to $CONF_FILE:"
-    echo ""
-    echo '  # pactup'
-    echo '  export PATH="'"$INSTALL_DIR"':$PATH"'
-    echo '  eval "`pactup env --use-on-cd`"'
-
-    echo '' >>$CONF_FILE
-    echo '# pactup' >>$CONF_FILE
-    echo 'export PATH="'"$INSTALL_DIR"':$PATH"' >>$CONF_FILE
-    echo 'eval "`pactup env --use-on-cd`"' >>$CONF_FILE
+    {
+      echo ''
+      echo '# pactup'
+      echo 'PACTUP_PATH="'"$INSTALL_DIR"'"'
+      echo 'if [ -d "$PACTUP_PATH" ]; then'
+      echo '  export PATH="$PACTUP_PATH:$PATH"'
+      echo '  eval "`fnm env --use-on-cd`"'
+      echo 'fi'
+    } | tee -a "$CONF_FILE"
 
   else
     echo "Could not infer shell type. Please set up manually. $CURRENT_SHELL"

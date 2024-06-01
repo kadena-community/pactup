@@ -154,16 +154,6 @@ impl Command for Install {
       Ok(()) => {}
     };
 
-    if let UserVersion::Full(Version::Nightly(nightly_type)) = current_version {
-      let alias_name = nightly_type.to_string();
-      debug!(
-        "Tagging {} as alias for {}",
-        alias_name.cyan(),
-        version.v_str().cyan()
-      );
-      create_alias(config, &alias_name, version)?;
-    }
-
     if !config.default_version_dir().exists() {
       debug!(
         "Tagging {} as the default version",
@@ -172,9 +162,30 @@ impl Command for Install {
       create_alias(config, "default", &release.tag_name)?;
     }
 
+    if let Some(tagged_alias) = current_version.inferred_alias() {
+      tag_alias(config, version, &tagged_alias)?;
+    }
+
     Ok(())
   }
 }
+
+fn tag_alias(
+  config: &PactupConfig,
+  matched_version: &Version,
+  alias: &Version,
+) -> Result<(), Error> {
+  let alias_name = alias.v_str();
+  debug!(
+    "Tagging {} as alias for {}",
+    alias_name.cyan(),
+    matched_version.v_str().cyan()
+  );
+  create_alias(config, &alias_name, matched_version)?;
+
+  Ok(())
+}
+
 #[derive(Debug, Error)]
 pub enum Error {
   #[error("Can't download the requested binary: {}", source)]

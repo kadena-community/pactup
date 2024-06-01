@@ -63,6 +63,17 @@ impl UserVersion {
       }
     }
   }
+
+  /// The inferred alias for the user version, if it exists.
+  pub fn inferred_alias(&self) -> Option<Version> {
+    match self {
+      UserVersion::Full(Version::Latest) => Some(Version::Latest),
+      UserVersion::Full(Version::Nightly(nightly_type)) => {
+        Some(Version::Nightly(nightly_type.clone()))
+      }
+      _ => None,
+    }
+  }
 }
 
 fn next_of<'a, T: FromStr, It: Iterator<Item = &'a str>>(i: &mut It) -> Option<T> {

@@ -1,8 +1,7 @@
-use crate::arch::Arch;
 use crate::log_level::LogLevel;
 use crate::path_ext::PathExt;
 use crate::version_file_strategy::VersionFileStrategy;
-use dirs::{data_dir, home_dir};
+use crate::{arch::Arch, directories::Directories};
 
 #[derive(clap::Parser, Debug)]
 pub struct PactupConfig {
@@ -28,7 +27,7 @@ pub struct PactupConfig {
 
   /// The root directory of pact installations.
   #[clap(
-    long = "pact-dir",
+    long = "pactup-dir",
     env = "PACTUP_PACT_DIR",
     global = true,
     hide_env_values = true
@@ -78,6 +77,9 @@ pub struct PactupConfig {
     hide_env_values = true
   )]
   version_file_strategy: VersionFileStrategy,
+
+  #[clap(skip)]
+  directories: Directories,
 }
 
 impl Default for PactupConfig {
@@ -90,6 +92,7 @@ impl Default for PactupConfig {
       log_level: LogLevel::Info,
       arch: Arch::default(),
       version_file_strategy: VersionFileStrategy::default(),
+      directories: Directories::default(),
     }
   }
 }
@@ -116,19 +119,7 @@ impl PactupConfig {
       return dir;
     }
 
-    let legacy = home_dir()
-      .map(|dir| dir.join(".pactup"))
-      .filter(|dir| dir.exists());
-
-    let modern = data_dir().map(|dir| dir.join("pactup"));
-
-    if let Some(dir) = legacy {
-      return dir;
-    }
-
-    modern
-      .expect("Can't get data directory")
-      .ensure_exists_silently()
+    self.directories.default_base_dir()
   }
 
   pub fn installations_dir(&self) -> std::path::PathBuf {
@@ -136,6 +127,10 @@ impl PactupConfig {
       .base_dir_with_default()
       .join("pact-versions")
       .ensure_exists_silently()
+  }
+
+  pub fn multishell_storage(&self) -> std::path::PathBuf {
+    self.directories.multishell_storage()
   }
 
   pub fn default_version_dir(&self) -> std::path::PathBuf {

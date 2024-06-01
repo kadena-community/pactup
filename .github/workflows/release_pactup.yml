@@ -176,7 +176,9 @@ jobs:
           name: pactup v${{ needs.check.outputs.version }}
           tag_name: pactup_v${{ needs.check.outputs.version }}
           draft: true
-          files: pactup-*
+          files: |
+            pactup-*.tar.gz
+            pactup-*.zip
           fail_on_unmatched_files: true
 
       - name: wait 3 minutes for smoke test
