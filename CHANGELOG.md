@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.16
+
+### Patch Changes
+
+- [#28](https://github.com/kadena-community/pactup/pull/28) [`190de1c`](https://github.com/kadena-community/pactup/commit/190de1c1fdbb451e92d9fdbad044ab866eeb1d69) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Fix os arch report and support package.json version lookup
+
 ## 0.2.15
 
 ### Patch Changes

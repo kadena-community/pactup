@@ -61,6 +61,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 
@@ -133,6 +140,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -183,6 +197,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -251,6 +272,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -311,6 +339,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -378,6 +413,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -433,6 +475,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -492,6 +541,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -546,6 +602,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -604,6 +667,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -657,6 +727,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -721,6 +798,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -778,6 +862,13 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
+
   -h, --help
           Print help (see a summary with '-h')
 ```
@@ -832,6 +923,13 @@ Options:
           Possible values:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
+
+      --resolve-engines
+          Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+          Experimental: This feature is subject to change.
+          Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+
+          [env: PACTUP_RESOLVE_ENGINES]
 
   -h, --help
           Print help (see a summary with '-h')
