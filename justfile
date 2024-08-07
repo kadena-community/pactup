@@ -4,14 +4,13 @@ _default:
   @just --list -u
 
 alias r := ready
-alias c := coverage
 
 # Make sure you have cargo-binstall installed.
 # You can download the pre-compiled binary from <https://github.com/cargo-bins/cargo-binstall#installation>
 # or install via `cargo install cargo-binstall`
 # Initialize the project by installing all the necessary tools.
 init:
-  cargo binstall cargo-watch cargo-insta cargo-edit typos-cli taplo-cli wasm-pack cargo-llvm-cov -y
+  cargo binstall cargo-watch cargo-insta typos-cli taplo-cli wasm-pack cargo-llvm-cov cargo-shear -y
 
 # When ready, run the same CI commands
 ready:
@@ -22,6 +21,8 @@ ready:
   just test
   just lint
   just doc
+  just ast
+  cargo shear
   git status
 
 # Clone or update submodules
@@ -30,6 +31,10 @@ ready:
 #   just clone-submodule tasks/coverage/babel git@github.com:babel/babel.git 4bd1b2c2f1bb3f702cfcb50448736e33c7000128
 #   just clone-submodule tasks/coverage/typescript git@github.com:microsoft/TypeScript.git 64d2eeea7b9c7f1a79edf42cb99f302535136a2e
 #   just clone-submodule tasks/prettier_conformance/prettier git@github.com:prettier/prettier.git 7142cf354cce2558f41574f44b967baf11d5b603
+
+install-hook:
+  echo "#!/bin/sh\njust fmt" > .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
 
 # --no-vcs-ignores: cargo-watch has a bug loading all .gitignores, including the ones listed in .gitignore
 # use .ignore file getting the ignore list
@@ -48,7 +53,7 @@ fmt:
 
 # Run cargo check
 check:
-  cargo check
+  cargo ck
 
 # Run all the tests
 test:
@@ -56,17 +61,12 @@ test:
 
 # Lint the whole project
 lint:
-  cargo clippy -- --deny warnings
+  cargo lint -- --deny warnings
 
 doc:
   RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --document-private-items
 
-# Run all the conformance tests. See `tasks/coverage`, `tasks/transform_conformance`, `tasks/minsize`
-coverage:
-  cargo coverage
-  # cargo run -p oxc_transform_conformance -- --exec
-  # cargo run -p oxc_prettier_conformance
-  # cargo minsize
+
 
 # Get code coverage
 codecov:
@@ -78,7 +78,6 @@ benchmark:
 
 # Removed Unused Dependencies
 shear:
-  cargo binstall cargo-shear
   cargo shear --fix
 
 # Automatically DRY up Cargo.toml manifests in a workspace.

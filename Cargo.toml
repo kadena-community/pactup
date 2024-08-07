@@ -2,7 +2,7 @@
 name        = "pactup"
 version     = "0.2.15"
 edition     = "2021"
-license     = "GPL-3.0"
+license     = "MIT"
 publish     = true
 build       = "build.rs"
 repository  = "https://github.com/kadena-community/pactup"
