@@ -14,7 +14,7 @@ impl UserVersionReader {
   pub fn into_user_version(self, config: &PactupConfig) -> Option<UserVersion> {
     match self {
       Self::Direct(uv) => Some(uv),
-      Self::Path(pathbuf) if pathbuf.is_file() => get_user_version_for_file(pathbuf),
+      Self::Path(pathbuf) if pathbuf.is_file() => get_user_version_for_file(pathbuf, config),
       Self::Path(pathbuf) => get_user_version_for_directory(pathbuf, config),
     }
   }
@@ -45,36 +45,36 @@ mod tests {
   #[test]
   fn test_file_pathbuf_to_version() {
     let mut file = NamedTempFile::new().unwrap();
-    write!(file, "14").unwrap();
+    write!(file, "4").unwrap();
     let pathbuf = file.path().to_path_buf();
 
     let user_version = UserVersionReader::Path(pathbuf).into_user_version(&PactupConfig::default());
-    assert_eq!(user_version, Some(UserVersion::OnlyMajor(14)));
+    assert_eq!(user_version, Some(UserVersion::OnlyMajor(4)));
   }
 
   #[test]
   fn test_directory_pathbuf_to_version() {
     let directory = TempDir::new().unwrap();
     let pact_version_path = directory.path().join(".pact-version");
-    std::fs::write(pact_version_path, "14").unwrap();
+    std::fs::write(pact_version_path, "4").unwrap();
     let pathbuf = directory.path().to_path_buf();
 
     let user_version = UserVersionReader::Path(pathbuf).into_user_version(&PactupConfig::default());
-    assert_eq!(user_version, Some(UserVersion::OnlyMajor(14)));
+    assert_eq!(user_version, Some(UserVersion::OnlyMajor(4)));
   }
 
   #[test]
   fn test_direct_to_version() {
-    let user_version = UserVersionReader::Direct(UserVersion::OnlyMajor(14))
+    let user_version = UserVersionReader::Direct(UserVersion::OnlyMajor(4))
       .into_user_version(&PactupConfig::default());
-    assert_eq!(user_version, Some(UserVersion::OnlyMajor(14)));
+    assert_eq!(user_version, Some(UserVersion::OnlyMajor(4)));
   }
 
   #[test]
   fn test_from_str_directory() {
     let directory = TempDir::new().unwrap();
     let pact_version_path = directory.path().join(".pact-version");
-    std::fs::write(pact_version_path, "14").unwrap();
+    std::fs::write(pact_version_path, "4").unwrap();
     let pathbuf = directory.path().to_path_buf();
 
     let user_version = UserVersionReader::from_str(pathbuf.to_str().unwrap());
@@ -84,7 +84,7 @@ mod tests {
   #[test]
   fn test_from_str_file() {
     let mut file = NamedTempFile::new().unwrap();
-    write!(file, "14").unwrap();
+    write!(file, "4").unwrap();
     let pathbuf = file.path().to_path_buf();
 
     let user_version = UserVersionReader::from_str(pathbuf.to_str().unwrap());

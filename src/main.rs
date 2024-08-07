@@ -19,6 +19,7 @@ mod downloader;
 mod fs;
 mod http;
 mod installed_versions;
+mod package_json;
 mod path_ext;
 mod progress;
 mod remote_pact_index;

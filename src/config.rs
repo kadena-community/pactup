@@ -78,6 +78,18 @@ pub struct PactupConfig {
   )]
   version_file_strategy: VersionFileStrategy,
 
+  /// Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
+  /// Experimental: This feature is subject to change.
+  /// Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+  #[clap(
+    long,
+    env = "PACTUP_RESOLVE_ENGINES",
+    global = true,
+    hide_env_values = true,
+    verbatim_doc_comment
+  )]
+  resolve_engines: bool,
+
   #[clap(skip)]
   directories: Directories,
 }
@@ -93,6 +105,7 @@ impl Default for PactupConfig {
       arch: Arch::default(),
       version_file_strategy: VersionFileStrategy::default(),
       directories: Directories::default(),
+      resolve_engines: false,
     }
   }
 }
@@ -100,6 +113,10 @@ impl Default for PactupConfig {
 impl PactupConfig {
   pub fn version_file_strategy(&self) -> &VersionFileStrategy {
     &self.version_file_strategy
+  }
+
+  pub fn resolve_engines(&self) -> bool {
+    self.resolve_engines
   }
 
   pub fn multishell_path(&self) -> Option<&std::path::Path> {

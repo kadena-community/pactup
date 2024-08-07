@@ -18,6 +18,7 @@
     "kadena-community",
     "smart-contracts"
   ],
+  
   "homepage": "https://github.com/kadena-community/pactup",
   "bugs": "https://github.com/kadena-community/pactup/issues",
   "bin": "bin/pactup",
