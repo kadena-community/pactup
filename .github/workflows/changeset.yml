@@ -9,36 +9,20 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 jobs:
   create_pull_request:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22]
     steps:
-      # set up
       - uses: actions/checkout@v4
-
-      - uses: hecrj/setup-rust-action@v2
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          rust-version: stable
-
-      - uses: Swatinem/rust-cache@v2
-
-      - uses: pnpm/action-setup@v4
+          version: 9
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          run_install: false
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: "pnpm"
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
 
       - name: Install Asciinema
         run: |

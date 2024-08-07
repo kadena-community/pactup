@@ -129,6 +129,7 @@ jobs:
     permissions:
       contents: write # for softprops/action-gh-release@v1
       id-token: write # for `npm publish --provenance`
+    
     steps:
       - uses: taiki-e/checkout-action@v1
 
@@ -180,9 +181,10 @@ jobs:
             pactup-*.tar.gz
           # pactup-*.zip # windows
           fail_on_unmatched_files: true
+          target_commitish: ${{ github.sha }}
 
-      - name: wait 3 minutes for smoke test
-        run: sleep 180s
+      - name: wait 1 minutes for smoke test
+        run: sleep 60s
 
   smoke:
     needs: [publish, check]
