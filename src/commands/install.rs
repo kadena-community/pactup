@@ -1,6 +1,5 @@
 use super::command::Command;
 use crate::alias::create_alias;
-use crate::arch::get_safe_arch;
 use crate::config::PactupConfig;
 use crate::downloader::{install_pact_dist, Error as DownloaderError};
 use crate::outln;
@@ -132,19 +131,18 @@ impl Command for Install {
 
     // Automatically swap Apple Silicon to x64 arch for appropriate versions.
     let version = &release.tag_name;
-    let safe_arch = get_safe_arch(&config.arch, version);
     outln!(
       config,
       Info,
       "Installing {} ({})",
       format!("Pact {}", &version).cyan(),
-      safe_arch.to_string()
+      config.arch.to_string()
     );
     match install_pact_dist(
       version,
       &release.download_url(&config.arch),
       config.installations_dir(),
-      safe_arch,
+      &config.arch,
       show_progress,
     ) {
       Err(err @ DownloaderError::VersionAlreadyInstalled { .. }) => {
