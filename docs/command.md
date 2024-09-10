@@ -93,7 +93,7 @@ Options:
           [default: kadena-io/pact]
 
       --nightly
-          Show nightly versions
+          Include nightly versions
 
       --pact-5x-repo <PACT_5X_REPO>
           <https://github.com/kadena-io/pact>
@@ -249,6 +249,9 @@ Options:
 
           [default: auto]
           [possible values: auto, never, always]
+
+      --force
+          force install even if the version is already installed
 
       --log-level <LOG_LEVEL>
           The log level of pactup commands
