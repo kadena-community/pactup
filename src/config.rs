@@ -1,7 +1,7 @@
 use crate::log_level::LogLevel;
 use crate::path_ext::PathExt;
 use crate::version_file_strategy::VersionFileStrategy;
-use crate::{arch::Arch, directories::Directories};
+use crate::{directories::Directories, system_info::Arch};
 
 #[derive(clap::Parser, Debug)]
 pub struct PactupConfig {

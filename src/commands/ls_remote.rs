@@ -87,6 +87,10 @@ impl super::command::Command for LsRemote {
         print!("{}", " (nightly)".to_string().cyan());
       }
 
+      if !version.has_supported_asset() {
+        print!("{}", " (can't install)".to_string().red());
+      }
+
       println!();
     }
 

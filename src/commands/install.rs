@@ -144,7 +144,7 @@ impl Command for Install {
     );
     match install_pact_dist(
       version,
-      &release.download_url(&config.arch),
+      &release.download_url(),
       config.installations_dir(),
       &config.arch,
       show_progress,
