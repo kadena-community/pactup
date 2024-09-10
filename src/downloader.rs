@@ -1,9 +1,9 @@
-use crate::arch::Arch;
 use crate::archive;
 use crate::archive::extract::ArchiveType;
 use crate::archive::{Error as ExtractError, Extract};
 use crate::directory_portal::DirectoryPortal;
 use crate::progress::ResponseProgress;
+use crate::system_info::Arch;
 use crate::version::Version;
 use indicatif::ProgressDrawTarget;
 use log::debug;

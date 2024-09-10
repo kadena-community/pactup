@@ -1,61 +1,11 @@
-use crate::arch::Arch;
-use crate::version::Version;
+use crate::{
+  system_info::{get_platform, Arch, Platform},
+  version::Version,
+};
 use chrono::{DateTime, Utc};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use url::Url;
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-#[non_exhaustive]
-pub struct Uploader {
-  pub name: Option<String>,
-  pub email: Option<String>,
-  pub login: String,
-  pub id: usize,
-  pub node_id: String,
-  pub avatar_url: Url,
-  pub gravatar_id: Option<String>,
-  pub url: Url,
-  pub html_url: Url,
-  pub followers_url: Url,
-  pub following_url: Url,
-  pub gists_url: Url,
-  pub starred_url: Url,
-  pub subscriptions_url: Url,
-  pub organizations_url: Url,
-  pub repos_url: Url,
-  pub events_url: Url,
-  pub received_events_url: Url,
-  pub r#type: String,
-  pub site_admin: bool,
-  pub starred_at: Option<String>,
-}
-
-#[derive(Debug, Clone, Hash, Eq, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
-pub struct Author {
-  pub login: String,
-  pub id: usize,
-  pub node_id: String,
-  pub avatar_url: Url,
-  pub gravatar_id: String,
-  pub url: Url,
-  pub html_url: Url,
-  pub followers_url: Url,
-  pub following_url: Url,
-  pub gists_url: Url,
-  pub starred_url: Url,
-  pub subscriptions_url: Url,
-  pub organizations_url: Url,
-  pub repos_url: Url,
-  pub events_url: Url,
-  pub received_events_url: Url,
-  pub r#type: String,
-  pub site_admin: bool,
-  pub patch_url: Option<String>,
-  #[serde(skip_serializing_if = "Option::is_none")]
-  pub email: Option<String>,
-}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -63,97 +13,84 @@ pub struct Asset {
   pub url: Url,
   pub browser_download_url: Url,
   pub id: usize,
-  pub node_id: String,
   pub name: String,
-  pub label: Option<String>,
-  pub state: String,
-  pub content_type: String,
   pub size: i64,
-  pub download_count: i64,
   pub created_at: DateTime<Utc>,
   pub updated_at: DateTime<Utc>,
-  pub uploader: Option<Uploader>,
 }
 
+/// The Release struct holds release information from the repository.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct Release {
-  pub url: Url,
-  pub html_url: Url,
-  pub assets_url: Url,
-  pub upload_url: String,
-  pub tarball_url: Option<Url>,
-  pub zipball_url: Option<Url>,
-  pub id: usize,
-  pub node_id: String,
   pub tag_name: Version,
-  pub target_commitish: String,
-  pub name: Option<String>,
-  pub body: Option<String>,
-  pub draft: bool,
-  pub prerelease: bool,
-  pub created_at: Option<DateTime<Utc>>,
-  pub published_at: Option<DateTime<Utc>>,
-  pub author: Option<Author>,
   pub assets: Vec<Asset>,
+  pub prerelease: bool,
+  pub draft: bool,
 }
+
 impl Release {
-  #[cfg(target_os = "linux")]
-  pub fn filename_for_version(&self, _arch: &Arch) -> String {
+  /// Infers the current architecture and platform, and returns the appropriate version matcher.
+  pub fn version_matcher(&self) -> Result<Regex, String> {
     let version = &self.tag_name;
-    if version.is_nightly() {
-      "pact-binary-bundle.ubuntu-latest".to_string()
-    } else {
-      format!(
-        "pact-{pact_ver}-linux-22.04",
-        pact_ver = &version.digits_only().unwrap(),
-        // platform = crate::system_info::platform_name(),
-        // arch = arch,
-      )
+    let platform = get_platform();
+    match platform {
+      Platform {
+        os: "linux",
+        arch: Arch::X64,
+      } => {
+        let regex = if version.is_nightly() {
+          // match the nightly version format for linux pact-binary-bundle.ubuntu-*.<tar.gz | zip>
+          r"pact-binary-bundle\.(ubuntu-latest)\.(tar\.gz|zip)$"
+        } else {
+          // match the stable version format for linux pact-<version>-<linux|ubuntu>-<ubuntu_version>.<tar.gz | zip>
+          r"^pact-(\d+(\.\d+){0,2})(-(linux|ubuntu))?(-\d+\.\d+)?\.(tar\.gz|zip)$"
+        };
+        Regex::new(regex).map_err(|e| format!("Regex creation error: {e}"))
+      }
+      Platform {
+        os: "macos",
+        arch: Arch::X64,
+      } => {
+        let regex = if version.is_nightly() {
+          //  match the nightly version format for mac pact-binary-bundle.macos-latest.<tar.gz|zip>
+          r"pact-binary-bundle\.macos-latest\.(tar\.gz|zip)$"
+        } else {
+          // match the stable version format for mac pact-<version>-osx.<tar.gz | zip>
+          r"^pact-(\d+(\.\d+){0,2})-osx\.(tar\.gz|zip)$"
+        };
+        Regex::new(regex).map_err(|e| format!("Regex creation error: {e}"))
+      }
+      Platform {
+        os: "macos",
+        arch: Arch::Arm64,
+      } => {
+        let regex = if version.is_nightly() {
+          //  match the nightly version format for mac pact-binary-bundle.macos-m1.<tar.gz|zip>
+          r"pact-binary-bundle\.macos-m1\.(tar\.gz|zip)$"
+        } else {
+          // match the stable version format for mac pact-<version>-aarch64-osx.<tar.gz | zip>
+          r"^pact-(\d+(\.\d+){0,2})-aarch64-osx\.(tar\.gz|zip)$"
+        };
+        Regex::new(regex).map_err(|e| format!("Regex creation error: {e}"))
+      }
+      _ => Err("Unsupported platform".to_string()),
     }
   }
 
-  #[cfg(target_os = "macos")]
-  fn filename_for_version(&self, arch: &Arch) -> String {
-    let version = &self.tag_name;
-    if version.is_nightly() {
-      match arch {
-        Arch::X64 => "pact-binary-bundle.macos-latest".to_string(),
-        Arch::Arm64 => "pact-binary-bundle.macos-m1".to_string(),
-        _ => unimplemented!(),
-      }
-    } else {
-      match arch {
-        Arch::X64 => format!(
-          "pact-{pact_ver}-osx",
-          pact_ver = &version.digits_only().unwrap(),
-        ),
-        Arch::Arm64 => format!(
-          "pact-{pact_ver}-aarch64-osx",
-          pact_ver = &version.digits_only().unwrap(),
-        ),
-        _ => unimplemented!(),
-      }
-    }
+  /// Finds the asset for the current architecture and platform.
+  pub fn asset_for_current_platform(&self) -> Option<&Asset> {
+    let regex = self.version_matcher().ok()?;
+    self.assets.iter().find(|x| regex.is_match(&x.name))
   }
 
-  #[cfg(windows)]
-  fn filename_for_version(&self, arch: &Arch) -> String {
-    // format!(
-    //   "pact-{pact_ver}-win-{arch}.zip",
-    //   pact = &version,
-    //   arch = arch,
-    // )
-    unimplemented!()
+  /// Checks if the release has a supported asset for the current platform.
+  pub fn has_supported_asset(&self) -> bool {
+    self.asset_for_current_platform().is_some()
   }
 
-  pub fn download_url(&self, arch: &Arch) -> Url {
-    let name = self.filename_for_version(arch);
-    let asset = self
-      .assets
-      .iter()
-      .find(|x| x.name.starts_with(name.as_str()))
-      .expect("Can't find asset");
+  pub fn download_url(&self) -> Url {
+    let asset = self.asset_for_current_platform().expect("Can't find asset");
     asset.browser_download_url.clone()
   }
 }
@@ -213,19 +150,57 @@ pub fn get_by_tag(repo_url: &String, tag: &String) -> Result<Release, crate::htt
 #[cfg(test)]
 mod tests {
   use super::*;
-  use pretty_assertions::assert_eq;
 
   #[test]
   fn test_list() {
     let repo = "kadena-io/pact".to_string();
     let expected_version = Version::parse("4.11.0").unwrap();
     let mut versions = list(&repo).expect("Can't get HTTP data");
-    assert_eq!(
-      versions
-        .drain(..)
-        .find(|x| x.tag_name == expected_version)
-        .map(|x| x.tag_name),
-      Some(expected_version)
-    );
+    let release = versions
+      .drain(..)
+      .find(|x| x.tag_name == expected_version)
+      .map(|x| x.tag_name);
+    assert_eq!(release, Some(expected_version));
+    assert!(!release.unwrap().is_nightly());
+
+    let repo = "kadena-io/pact-5".to_string();
+    let expected_version = Version::parse("development-latest").unwrap();
+    let mut versions = list(&repo).expect("Can't get HTTP data");
+    let release = versions
+      .drain(..)
+      .find(|x| x.tag_name == expected_version)
+      .map(|x| x.tag_name);
+    assert_eq!(release, Some(expected_version));
+    assert!(release.unwrap().is_nightly());
+  }
+
+  #[test]
+  fn test_get_by_tag() {
+    let repo = "kadena-io/pact".to_string();
+    let tag = "v4.11.0".to_string();
+    let release = get_by_tag(&repo, &tag).expect("Can't get HTTP data");
+    assert_eq!(release.tag_name.to_string(), tag);
+    assert!(!release.tag_name.is_nightly());
+    assert!(release.has_supported_asset());
+
+    let repo = "kadena-io/pact-5".to_string();
+    let tag = "development-latest".to_string();
+    let release = get_by_tag(&repo, &tag).expect("Can't get HTTP data");
+    assert_eq!(release.tag_name.to_string(), tag);
+    assert!(release.tag_name.is_nightly());
+    assert!(release.has_supported_asset());
+  }
+
+  #[test]
+  fn test_latest() {
+    let repo = "kadena-io/pact".to_string();
+    let release = latest(&repo).expect("Can't get HTTP data");
+    assert!(!release.tag_name.is_nightly());
+    assert!(release.has_supported_asset());
+
+    let repo = "kadena-io/pact-5".to_string();
+    let release = latest(&repo).expect("Can't get HTTP data");
+    assert!(release.tag_name.is_nightly());
+    assert!(release.has_supported_asset());
   }
 }

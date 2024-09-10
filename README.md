@@ -224,6 +224,7 @@ cargo test
 
 - Windows is not supported because Pact does not support Windows anyway.
 - The Pact binaries are problematic; they are not consistent in each release, and often, releases are missing binaries. For example, the latest release, 4.12, does not have any Mac binaries on GitHub. Expect some issues with this.
+- Some older versions might require older system libs (eg. libncurses5).
 
 ## Credit
 
