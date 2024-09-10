@@ -3,7 +3,7 @@ use crate::archive::extract::ArchiveType;
 use crate::archive::{Error as ExtractError, Extract};
 use crate::directory_portal::DirectoryPortal;
 use crate::progress::ResponseProgress;
-use crate::system_info::Arch;
+use crate::system_info::PlatformArch;
 use crate::version::Version;
 use indicatif::ProgressDrawTarget;
 use log::debug;
@@ -33,7 +33,10 @@ pub enum Error {
   // #[error("The downloaded archive is empty")]
   // TarIsEmpty,
   #[error("{} for {} not found upstream.\nYou can `pactup ls-remote` to see available versions or try a different `--arch`.", version, arch)]
-  VersionNotFound { version: Version, arch: Arch },
+  VersionNotFound {
+    version: Version,
+    arch: PlatformArch,
+  },
   #[error("Version already installed at {:?}", path)]
   VersionAlreadyInstalled { path: PathBuf },
 }
@@ -55,7 +58,7 @@ pub fn install_pact_dist<P: AsRef<Path>>(
   version: &Version,
   download_url: &Url,
   installations_dir: P,
-  arch: &Arch,
+  arch: &PlatformArch,
   show_progress: bool,
   force: bool,
 ) -> Result<(), Error> {
@@ -149,9 +152,9 @@ mod tests {
   fn install_in(path: &Path) -> PathBuf {
     let version = Version::parse("4.11.0").unwrap();
     #[cfg(target_arch = "x86_64")]
-    let arch = Arch::X64;
+    let arch = PlatformArch::X64;
     #[cfg(target_arch = "aarch64")]
-    let arch = Arch::Arm64;
+    let arch = PlatformArch::Arm64;
     // github release asset url
     let pact_dist_mirror = Url::parse(
       "https://github.com/kadena-io/pact/releases/download/v4.11.0/pact-4.11.0-linux-20.04.zip",

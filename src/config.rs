@@ -1,7 +1,7 @@
 use crate::log_level::LogLevel;
 use crate::path_ext::PathExt;
 use crate::version_file_strategy::VersionFileStrategy;
-use crate::{directories::Directories, system_info::Arch};
+use crate::{directories::Directories, system_info::PlatformArch};
 
 #[derive(clap::Parser, Debug)]
 pub struct PactupConfig {
@@ -65,7 +65,7 @@ pub struct PactupConfig {
     hide_env_values = true,
     hide_default_value = true
   )]
-  pub arch: Arch,
+  pub arch: PlatformArch,
 
   /// A strategy for how to resolve the Pact version. Used whenever `pactup use` or `pactup install` is
   /// called without a version, or when `--use-on-cd` is configured on evaluation.
@@ -102,7 +102,7 @@ impl Default for PactupConfig {
       base_dir: None,
       multishell_path: None,
       log_level: LogLevel::Info,
-      arch: Arch::default(),
+      arch: PlatformArch::default(),
       version_file_strategy: VersionFileStrategy::default(),
       directories: Directories::default(),
       resolve_engines: false,

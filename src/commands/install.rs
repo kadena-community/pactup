@@ -142,9 +142,15 @@ impl Command for Install {
       format!("Pact {}", &version).cyan(),
       config.arch.to_string()
     );
+    let Some(download_url) = release.download_url() else {
+      return Err(Error::CantFindReleaseAsset {
+        requested_version: current_version,
+      });
+    };
+
     match install_pact_dist(
       version,
-      &release.download_url(),
+      &download_url,
       config.installations_dir(),
       &config.arch,
       show_progress,
@@ -207,6 +213,11 @@ pub enum Error {
     requested_version
   )]
   CantFindPactVersion { requested_version: UserVersion },
+  #[error(
+    "Can't find a release asset for the requested version: {}",
+    requested_version
+  )]
+  CantFindReleaseAsset { requested_version: UserVersion },
   #[error("Can't find nightly version named {}", nightly_tag)]
   CantFindNightly { nightly_tag: String },
   #[error("Can't find any versions in the upstream version index.")]

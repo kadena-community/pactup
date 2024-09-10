@@ -1,5 +1,5 @@
 use crate::{
-  system_info::{get_platform, Arch, Platform},
+  system_info::{get_platform, Platform, PlatformArch, PlatformOS},
   version::Version,
 };
 use chrono::{DateTime, Utc};
@@ -35,10 +35,7 @@ impl Release {
     let version = &self.tag_name;
     let platform = get_platform();
     match platform {
-      Platform {
-        os: "linux",
-        arch: Arch::X64,
-      } => {
+      Platform(PlatformOS::Linux, PlatformArch::X64) => {
         let regex = if version.is_nightly() {
           // match the nightly version format for linux pact-binary-bundle.ubuntu-*.<tar.gz | zip>
           r"pact-binary-bundle\.(ubuntu-latest)\.(tar\.gz|zip)$"
@@ -48,10 +45,7 @@ impl Release {
         };
         Regex::new(regex).map_err(|e| format!("Regex creation error: {e}"))
       }
-      Platform {
-        os: "macos",
-        arch: Arch::X64,
-      } => {
+      Platform(PlatformOS::MacOS, PlatformArch::X64) => {
         let regex = if version.is_nightly() {
           //  match the nightly version format for mac pact-binary-bundle.macos-latest.<tar.gz|zip>
           r"pact-binary-bundle\.macos-latest\.(tar\.gz|zip)$"
@@ -61,10 +55,7 @@ impl Release {
         };
         Regex::new(regex).map_err(|e| format!("Regex creation error: {e}"))
       }
-      Platform {
-        os: "macos",
-        arch: Arch::Arm64,
-      } => {
+      Platform(PlatformOS::MacOS, PlatformArch::Arm64) => {
         let regex = if version.is_nightly() {
           //  match the nightly version format for mac pact-binary-bundle.macos-m1.<tar.gz|zip>
           r"pact-binary-bundle\.macos-m1\.(tar\.gz|zip)$"
@@ -86,12 +77,16 @@ impl Release {
 
   /// Checks if the release has a supported asset for the current platform.
   pub fn has_supported_asset(&self) -> bool {
+    println!(
+      "Checking if release has supported asset {:?}",
+      self.asset_for_current_platform()
+    );
     self.asset_for_current_platform().is_some()
   }
 
-  pub fn download_url(&self) -> Url {
-    let asset = self.asset_for_current_platform().expect("Can't find asset");
-    asset.browser_download_url.clone()
+  pub fn download_url(&self) -> Option<Url> {
+    let asset = self.asset_for_current_platform();
+    asset.map(|asset| asset.browser_download_url.clone())
   }
 }
 

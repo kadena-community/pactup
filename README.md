@@ -226,6 +226,20 @@ cargo test
 - The Pact binaries are problematic; they are not consistent in each release, and often, releases are missing binaries. For example, the latest release, 4.12, does not have any Mac binaries on GitHub. Expect some issues with this.
 - Some older versions might require older system libs (eg. libncurses5).
 
+## Troubleshooting
+
+**Error: "Can't download the requested binary: Permission denied (os error 13)"**
+
+This error occurs when installing the `development-latest` nightly version, and then attempting to force install or remove it. The issue stems from permission problems in older versions of `pactup`.
+
+To resolve this, update to the latest `pactup` version (>=0.2.18), and run:
+
+```
+sudo pactup uninstall development-latest
+```
+
+After this, you should be able to run install/uninstall commands without using `sudo`.
+
 ## Credit
 
 Pact version manager is ported from the amazing [fnm](https://github.com/Schniz/fnm) codebase.

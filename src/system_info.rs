@@ -1,52 +1,87 @@
 #[cfg(target_os = "windows")]
-pub fn platform_os() -> &'static str {
-  "windows"
+pub fn platform_os() -> PlatformOS {
+  OS::Windows
 }
 
 #[cfg(target_os = "macos")]
-pub fn platform_os() -> &'static str {
-  "darwin"
+pub fn platform_os() -> PlatformOS {
+  PlatformOS::MacOS
 }
 
 #[cfg(target_os = "linux")]
-pub fn platform_os() -> &'static str {
-  "linux"
-}
-
-#[cfg(all(
-  target_pointer_width = "32",
-  any(target_arch = "arm", target_arch = "aarch64")
-))]
-pub fn platform_arch() -> &'static str {
-  "armv7l"
-}
-
-#[cfg(all(
-  target_pointer_width = "32",
-  not(any(target_arch = "arm", target_arch = "aarch64"))
-))]
-pub fn platform_arch() -> &'static str {
-  "x86"
-}
-
-#[cfg(all(
-  target_pointer_width = "64",
-  any(target_arch = "arm", target_arch = "aarch64")
-))]
-pub fn platform_arch() -> &'static str {
-  "arm64"
-}
-
-#[cfg(all(
-  target_pointer_width = "64",
-  not(any(target_arch = "arm", target_arch = "aarch64"))
-))]
-pub fn platform_arch() -> &'static str {
-  "x64"
+pub fn platform_os() -> PlatformOS {
+  PlatformOS::Linux
 }
 
 #[derive(Clone, PartialEq, Eq, Debug)]
-pub enum Arch {
+pub enum PlatformOS {
+  Windows,
+  MacOS,
+  Linux,
+}
+
+impl std::fmt::Display for PlatformOS {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+      PlatformOS::Windows => write!(f, "windows"),
+      PlatformOS::MacOS => write!(f, "macos"),
+      PlatformOS::Linux => write!(f, "linux"),
+    }
+  }
+}
+
+impl Default for PlatformOS {
+  fn default() -> PlatformOS {
+    platform_os()
+  }
+}
+
+impl std::str::FromStr for PlatformOS {
+  type Err = PlatformError;
+  fn from_str(s: &str) -> Result<PlatformOS, Self::Err> {
+    match s {
+      "windows" => Ok(PlatformOS::Windows),
+      "macos" => Ok(PlatformOS::MacOS),
+      "linux" => Ok(PlatformOS::Linux),
+      unknown => Err(PlatformError::new(&format!("Unknown OS: {unknown}"))),
+    }
+  }
+}
+
+#[cfg(all(
+  target_pointer_width = "32",
+  any(target_arch = "arm", target_arch = "aarch64")
+))]
+pub fn platform_arch() -> PlatformArch {
+  PlatformArch::Armv7l
+}
+
+#[cfg(all(
+  target_pointer_width = "32",
+  not(any(target_arch = "arm", target_arch = "aarch64"))
+))]
+pub fn platform_arch() -> PlatformArch {
+  PlatformArch::X86
+}
+
+#[cfg(all(
+  target_pointer_width = "64",
+  any(target_arch = "arm", target_arch = "aarch64")
+))]
+pub fn platform_arch() -> PlatformArch {
+  PlatformArch::Arm64
+}
+
+#[cfg(all(
+  target_pointer_width = "64",
+  not(any(target_arch = "arm", target_arch = "aarch64"))
+))]
+pub fn platform_arch() -> PlatformArch {
+  PlatformArch::X64
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum PlatformArch {
   X86,
   X64,
   Arm64,
@@ -56,41 +91,38 @@ pub enum Arch {
   S390x,
 }
 
-impl Default for Arch {
-  fn default() -> Arch {
-    match platform_arch().parse() {
-      Ok(arch) => arch,
-      Err(e) => panic!("{}", e.details),
-    }
+impl Default for PlatformArch {
+  fn default() -> PlatformArch {
+    platform_arch()
   }
 }
 
-impl std::str::FromStr for Arch {
-  type Err = ArchError;
-  fn from_str(s: &str) -> Result<Arch, Self::Err> {
+impl std::str::FromStr for PlatformArch {
+  type Err = PlatformError;
+  fn from_str(s: &str) -> Result<PlatformArch, Self::Err> {
     match s {
-      "x86" => Ok(Arch::X86),
-      "x64" => Ok(Arch::X64),
-      "arm64" => Ok(Arch::Arm64),
-      "armv7l" => Ok(Arch::Armv7l),
-      "ppc64le" => Ok(Arch::Ppc64le),
-      "ppc64" => Ok(Arch::Ppc64),
-      "s390x" => Ok(Arch::S390x),
-      unknown => Err(ArchError::new(&format!("Unknown Arch: {unknown}"))),
+      "x86" => Ok(PlatformArch::X86),
+      "x64" => Ok(PlatformArch::X64),
+      "arm64" => Ok(PlatformArch::Arm64),
+      "armv7l" => Ok(PlatformArch::Armv7l),
+      "ppc64le" => Ok(PlatformArch::Ppc64le),
+      "ppc64" => Ok(PlatformArch::Ppc64),
+      "s390x" => Ok(PlatformArch::S390x),
+      unknown => Err(PlatformError::new(&format!("Unknown Arch: {unknown}"))),
     }
   }
 }
 
-impl std::fmt::Display for Arch {
+impl std::fmt::Display for PlatformArch {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     let arch_str = match self {
-      Arch::X86 => String::from("x86"),
-      Arch::X64 => String::from("x64"),
-      Arch::Arm64 => String::from("arm64"),
-      Arch::Armv7l => String::from("armv7l"),
-      Arch::Ppc64le => String::from("ppc64le"),
-      Arch::Ppc64 => String::from("ppc64"),
-      Arch::S390x => String::from("s390x"),
+      PlatformArch::X86 => String::from("x86"),
+      PlatformArch::X64 => String::from("x64"),
+      PlatformArch::Arm64 => String::from("arm64"),
+      PlatformArch::Armv7l => String::from("armv7l"),
+      PlatformArch::Ppc64le => String::from("ppc64le"),
+      PlatformArch::Ppc64 => String::from("ppc64"),
+      PlatformArch::S390x => String::from("s390x"),
     };
 
     write!(f, "{arch_str}")
@@ -98,47 +130,36 @@ impl std::fmt::Display for Arch {
 }
 
 #[derive(Debug)]
-pub struct ArchError {
+pub struct PlatformError {
   details: String,
 }
 
-impl ArchError {
-  fn new(msg: &str) -> ArchError {
-    ArchError {
+impl PlatformError {
+  fn new(msg: &str) -> PlatformError {
+    PlatformError {
       details: msg.to_string(),
     }
   }
 }
 
-impl std::fmt::Display for ArchError {
+impl std::fmt::Display for PlatformError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}", self.details)
   }
 }
 
-impl std::error::Error for ArchError {
+impl std::error::Error for PlatformError {
   fn description(&self) -> &str {
     &self.details
   }
 }
 
-pub struct Platform {
-  pub os: &'static str,
-  pub arch: Arch,
-}
-
-impl Default for Platform {
-  fn default() -> Platform {
-    Platform {
-      os: platform_os(),
-      arch: Arch::default(),
-    }
-  }
-}
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
+pub struct Platform(pub PlatformOS, pub PlatformArch);
 
 impl std::fmt::Display for Platform {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{name}-{arch}", name = self.os, arch = self.arch)
+    write!(f, "{os}-{arch}", os = self.0, arch = self.1)
   }
 }
 
