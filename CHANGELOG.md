@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.18
+
+### Patch Changes
+
+- [#33](https://github.com/kadena-community/pactup/pull/33) [`b440066`](https://github.com/kadena-community/pactup/commit/b440066ebb310fed22bf11a881b88e84236833f9) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix macos installation
+
 ## 0.2.17
 
 ### Patch Changes
