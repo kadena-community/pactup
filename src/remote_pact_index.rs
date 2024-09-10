@@ -77,10 +77,6 @@ impl Release {
 
   /// Checks if the release has a supported asset for the current platform.
   pub fn has_supported_asset(&self) -> bool {
-    println!(
-      "Checking if release has supported asset {:?}",
-      self.asset_for_current_platform()
-    );
     self.asset_for_current_platform().is_some()
   }
 
