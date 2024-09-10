@@ -25,11 +25,14 @@ pub struct Install {
   #[clap(long, conflicts_with_all = &["version", "nightly"])]
   pub latest: bool,
 
-  /// Show an interactive progress bar for the download
-  /// status.
+  /// Show an interactive progress bar for the download status.
   #[clap(long, default_value_t)]
   #[arg(value_enum)]
   pub progress: ProgressConfig,
+
+  /// force install even if the version is already installed
+  #[clap(long)]
+  pub force: bool,
 }
 
 impl Install {
@@ -66,6 +69,7 @@ impl Command for Install {
   fn apply(self, config: &PactupConfig) -> Result<(), Self::Error> {
     let current_dir = std::env::current_dir().unwrap();
     let show_progress = self.progress.enabled(config);
+    let force_install = self.force;
     let current_version = self
       .version()?
       .or_else(|| get_user_version_for_directory(current_dir, config))
@@ -144,6 +148,7 @@ impl Command for Install {
       config.installations_dir(),
       &config.arch,
       show_progress,
+      force_install,
     ) {
       Err(err @ DownloaderError::VersionAlreadyInstalled { .. }) => {
         outln!(config, Error, "{} {}", "warning:".bold().yellow(), err);
@@ -229,6 +234,7 @@ mod tests {
       version: UserVersion::from_str("4.11.0").ok(),
       nightly: false,
       latest: false,
+      force: false,
       progress: ProgressConfig::Never,
     }
     .apply(&config)
@@ -256,6 +262,7 @@ mod tests {
       version: None,
       nightly: false,
       latest: true,
+      force: false,
       progress: ProgressConfig::Never,
     }
     .apply(&config)
@@ -282,6 +289,7 @@ mod tests {
       version: None,
       nightly: true,
       latest: false,
+      force: false,
       progress: ProgressConfig::Never,
     }
     .apply(&config)

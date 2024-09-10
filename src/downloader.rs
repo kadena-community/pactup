@@ -57,21 +57,34 @@ pub fn install_pact_dist<P: AsRef<Path>>(
   installations_dir: P,
   arch: &Arch,
   show_progress: bool,
+  force: bool,
 ) -> Result<(), Error> {
-  let installation_dir = PathBuf::from(installations_dir.as_ref()).join(version.v_str());
+  let version_installation_dir = PathBuf::from(installations_dir.as_ref()).join(version.v_str());
 
-  if installation_dir.exists() {
-    return Err(Error::VersionAlreadyInstalled {
-      path: installation_dir,
-    });
+  if version_installation_dir.exists() {
+    if force {
+      debug!("Removing directory {:?}", version_installation_dir);
+      std::fs::remove_dir_all(&version_installation_dir)?;
+    } else {
+      return Err(Error::VersionAlreadyInstalled {
+        path: version_installation_dir,
+      });
+    }
+  }
+  if !installations_dir.as_ref().exists() {
+    debug!("Creating directory {:?}", installations_dir.as_ref());
+    std::fs::create_dir_all(installations_dir.as_ref())?;
   }
 
-  std::fs::create_dir_all(installations_dir.as_ref())?;
-
   let temp_installations_dir = installations_dir.as_ref().join(".downloads");
+  if temp_installations_dir.exists() {
+    debug!("Removing directory {:?}", temp_installations_dir);
+    std::fs::remove_dir_all(&temp_installations_dir)?;
+  }
   std::fs::create_dir_all(&temp_installations_dir)?;
 
-  let portal = DirectoryPortal::new_in(&temp_installations_dir, installation_dir);
+  debug!("Creating directory portal");
+  let portal = DirectoryPortal::new_in(&temp_installations_dir, version_installation_dir);
 
   debug!("Going to call for {}", download_url);
   let response = crate::http::get(download_url.as_str())?;
@@ -144,7 +157,7 @@ mod tests {
       "https://github.com/kadena-io/pact/releases/download/v4.11.0/pact-4.11.0-linux-20.04.zip",
     )
     .unwrap();
-    install_pact_dist(&version, &pact_dist_mirror, path, &arch, false)
+    install_pact_dist(&version, &pact_dist_mirror, path, &arch, false, false)
       .expect("Can't install Pact 4.11.0");
 
     let mut location_path = path.join(version.v_str());

@@ -12,7 +12,7 @@ pub struct LsRemote {
   #[arg(long)]
   filter: Option<UserVersion>,
 
-  /// Show nightly versions
+  /// Include nightly versions
   #[arg(long)]
   nightly: bool,
 
@@ -47,13 +47,22 @@ impl super::command::Command for LsRemote {
     } else {
       remote_pact_index::list(&config.pact_4x_repo)?
     };
+    // print latest version
+    if self.latest {
+      let latest = if self.nightly {
+        all_versions
+          .iter()
+          .find(|v| v.tag_name.is_nightly())
+          .unwrap()
+      } else {
+        &all_versions[0]
+      };
+      println!("{}", latest.tag_name);
+      return Ok(());
+    }
 
     if let Some(filter) = &self.filter {
       all_versions.retain(|v| filter.matches(&v.tag_name, config));
-    }
-
-    if self.latest {
-      all_versions.drain(0..all_versions.len() - 1);
     }
 
     if let SortingMethod::Descending = self.sort {
