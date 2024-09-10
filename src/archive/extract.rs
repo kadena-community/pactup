@@ -42,6 +42,11 @@ impl From<crate::http::Error> for Error {
   }
 }
 
+impl From<walkdir::Error> for Error {
+  fn from(err: walkdir::Error) -> Self {
+    Self::IoError(err.into())
+  }
+}
 pub trait Extract {
   fn extract_into<P: AsRef<Path>>(self, path: P) -> Result<(), Error>;
 }
