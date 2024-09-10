@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.17
+
+### Patch Changes
+
+- [#30](https://github.com/kadena-community/pactup/pull/30) [`000967d`](https://github.com/kadena-community/pactup/commit/000967d62234a25319227cda2c13052f5fb02a9f) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Add force install option and fix pact 5 permissions
+
 ## 0.2.16
 
 ### Patch Changes
