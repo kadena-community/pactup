@@ -209,6 +209,7 @@ pub enum Error {
   TooManyVersionsProvided,
 }
 
+#[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
   use super::*;
