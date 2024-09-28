@@ -95,7 +95,7 @@ pub fn install_pact_dist<P: AsRef<Path>>(
   if response.status() == 404 {
     return Err(Error::VersionNotFound {
       version: version.clone(),
-      arch: arch.clone(),
+      arch,
     });
   }
 

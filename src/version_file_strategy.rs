@@ -11,7 +11,7 @@ pub enum VersionFileStrategy {
 }
 
 impl VersionFileStrategy {
-  pub fn as_str(&self) -> &'static str {
+  pub fn as_str(self) -> &'static str {
     match self {
       VersionFileStrategy::Local => "local",
       VersionFileStrategy::Recursive => "recursive",
