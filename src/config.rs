@@ -111,12 +111,16 @@ impl Default for PactupConfig {
 }
 
 impl PactupConfig {
-  pub fn version_file_strategy(&self) -> &VersionFileStrategy {
-    &self.version_file_strategy
+  pub fn version_file_strategy(&self) -> VersionFileStrategy {
+    self.version_file_strategy
   }
 
   pub fn resolve_engines(&self) -> bool {
     self.resolve_engines
+  }
+
+  pub fn log_level(&self) -> LogLevel {
+    self.log_level
   }
 
   pub fn multishell_path(&self) -> Option<&std::path::Path> {
@@ -124,10 +128,6 @@ impl PactupConfig {
       None => None,
       Some(v) => Some(v.as_path()),
     }
-  }
-
-  pub fn log_level(&self) -> &LogLevel {
-    &self.log_level
   }
 
   pub fn base_dir_with_default(&self) -> std::path::PathBuf {

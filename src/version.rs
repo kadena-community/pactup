@@ -1,9 +1,10 @@
 use serde::Serialize;
+use std::path::PathBuf;
+use std::str::FromStr;
 
 use crate::alias;
 use crate::config;
 use crate::system_version;
-use std::str::FromStr;
 
 #[derive(Debug, PartialEq, PartialOrd, Eq, Ord, Clone, Serialize)]
 pub enum Version {
@@ -27,25 +28,26 @@ impl Version {
       || lowercased.contains("nightly")
       || lowercased.contains("dev")
     {
-      Ok(Self::Nightly(lowercased.to_string()))
+      Ok(Self::Nightly(lowercased))
     } else if first_letter_is_number(lowercased.trim_start_matches('v')) {
       let version_plain = lowercased.trim_start_matches('v');
-      // ensure that the version has 3 parts
-      if version_plain.split('.').count() != 3 {
-        let version_plain = &format!("{version_plain}.0");
-        let sver = node_semver::Version::parse(version_plain)?;
-        return Ok(Self::Semver(sver));
-      }
-      let sver = node_semver::Version::parse(version_plain)?;
+      // Ensure that the version has 3 parts
+      let parts_count = version_plain.split('.').count();
+      let version_complete = match parts_count {
+        1 => format!("{version_plain}.0.0"),
+        2 => format!("{version_plain}.0"),
+        _ => version_plain.to_string(),
+      };
+      let sver = node_semver::Version::parse(&version_complete)?;
       Ok(Self::Semver(sver))
     } else {
       Ok(Self::Alias(lowercased))
     }
   }
 
-  pub fn alias_name(&self) -> Option<String> {
+  pub fn alias_name(&self) -> Option<&str> {
     match self {
-      l @ (Self::Nightly(_) | Self::Alias(_)) => Some(l.v_str()),
+      Self::Nightly(name) | Self::Alias(name) => Some(name),
       _ => None,
     }
   }
@@ -55,7 +57,7 @@ impl Version {
     config: &config::PactupConfig,
   ) -> std::io::Result<Vec<alias::StoredAlias>> {
     let aliases = alias::list_aliases(config)?
-      .drain(..)
+      .into_iter()
       .filter(|alias| alias.s_ver() == self.v_str())
       .collect();
     Ok(aliases)
@@ -65,14 +67,15 @@ impl Version {
     format!("{self}")
   }
 
-  pub fn installation_path(&self, config: &config::PactupConfig) -> std::path::PathBuf {
+  pub fn installation_path(&self, config: &config::PactupConfig) -> PathBuf {
     match self {
       Self::Bypassed => system_version::path(),
       v @ (Self::Alias(_) | Self::Latest) => config.aliases_dir().join(v.alias_name().unwrap()),
-      v @ Self::Semver(_) => config.installations_dir().join(v.v_str()),
+      Self::Semver(_) => config.installations_dir().join(self.v_str()),
       v @ Self::Nightly(_) => {
-        if config.installations_dir().join(v.v_str()).exists() {
-          config.installations_dir().join(v.v_str())
+        let install_dir = config.installations_dir().join(v.v_str());
+        if install_dir.exists() {
+          install_dir
         } else {
           config.aliases_dir().join(v.alias_name().unwrap())
         }
@@ -80,7 +83,7 @@ impl Version {
     }
   }
 
-  pub fn root_path(&self, config: &config::PactupConfig) -> Option<std::path::PathBuf> {
+  pub fn root_path(&self, config: &config::PactupConfig) -> Option<PathBuf> {
     let path = self.installation_path(config);
     let mut canon_path = path.canonicalize().ok()?;
     canon_path.pop();
@@ -98,9 +101,6 @@ impl Version {
     }
   }
 }
-
-// TODO: add a trait called BinPath that &Path and PathBuf implements
-// which adds the `.bin_path()` which works both on windows and unix :)
 
 impl<'de> serde::Deserialize<'de> for Version {
   fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -134,8 +134,8 @@ impl FromStr for Version {
 impl PartialEq<node_semver::Version> for Version {
   fn eq(&self, other: &node_semver::Version) -> bool {
     match self {
-      Self::Bypassed | Self::Nightly(_) | Self::Alias(_) | Self::Latest => false,
       Self::Semver(v) => v == other,
+      _ => false,
     }
   }
 }

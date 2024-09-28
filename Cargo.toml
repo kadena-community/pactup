@@ -23,7 +23,7 @@ reqwest = { version = "0.12", features = [
 url = { version = "2.5", features = ["serde"] }
 clap = { version = "4.5", features = ["derive", "env"] }
 clap_complete = "4.5"
-colored = "2.0"
+colored = "2.1"
 etcetera = "0.8"
 encoding_rs_io = "0.1"
 env_logger = "0.11"
@@ -32,16 +32,16 @@ log = "0.4"
 node-semver = "2.1"
 sysinfo = "0.31"
 tar = "0.4"
-tempfile = "3.6"
+tempfile = "3.12"
 thiserror = "1.0"
-zip = "2.0"
+zip = "2.2"
 duct = "0.13"
 pretty_assertions = "1.4"
 test-log = "0.2"
 flate2 = "1.0"
 walkdir = "2.5"
 indicatif = { version = "0.17", features = ["improved_unicode"] }
-regex = "1.5"
+regex = "1.10"
 
 [dev-dependencies]
 pretty_assertions = "1.4"
@@ -50,11 +50,11 @@ test-log          = "0.2"
 http              = "1.1"
 
 [build-dependencies]
-embed-resource = "2.4"
+embed-resource = "2.5"
 
 [target.'cfg(windows)'.dependencies]
 csv      = "1.3"
-junction = "1.1"
+junction = "1.2"
 
 
 [profile.dev]

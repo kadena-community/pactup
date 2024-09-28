@@ -17,11 +17,11 @@ pub struct Install {
   /// A version string. Can be a partial semver or a 'development' version.
   pub version: Option<UserVersion>,
 
-  /// Install latest nightly version
+  /// Install latest nightly version.
   #[clap(long, conflicts_with_all = &["version", "latest"])]
   pub nightly: bool,
 
-  /// Install latest version
+  /// Install latest version.
   #[clap(long, conflicts_with_all = &["version", "nightly"])]
   pub latest: bool,
 
@@ -30,34 +30,20 @@ pub struct Install {
   #[arg(value_enum)]
   pub progress: ProgressConfig,
 
-  /// force install even if the version is already installed
+  /// Force install even if the version is already installed.
   #[clap(long)]
   pub force: bool,
 }
 
 impl Install {
-  fn version(self) -> Result<Option<UserVersion>, Error> {
-    match self {
-      Self {
-        version: v,
-        nightly: false,
-        latest: false,
-        ..
-      } => Ok(v),
-      Self {
-        version: None,
-        nightly: true,
-        latest: false,
-        ..
-      } => Ok(Some(UserVersion::Full(Version::Nightly(
-        "development-latest".to_string(),
+  fn version(&self) -> Result<Option<UserVersion>, Error> {
+    match (self.version.as_ref(), self.nightly, self.latest) {
+      (Some(v), false, false) => Ok(Some(v.clone())),
+      (None, true, false) => Ok(Some(UserVersion::Full(Version::Nightly(
+        "nightly".to_string(),
       )))),
-      Self {
-        version: None,
-        nightly: false,
-        latest: true,
-        ..
-      } => Ok(Some(UserVersion::Full(Version::Latest))),
+      (None, false, true) => Ok(Some(UserVersion::Full(Version::Latest))),
+      (None, false, false) => Ok(None),
       _ => Err(Error::TooManyVersionsProvided),
     }
   }
@@ -67,45 +53,45 @@ impl Command for Install {
   type Error = Error;
 
   fn apply(self, config: &PactupConfig) -> Result<(), Self::Error> {
-    let current_dir = std::env::current_dir().unwrap();
+    let current_dir = std::env::current_dir()?;
     let show_progress = self.progress.enabled(config);
     let force_install = self.force;
     let current_version = self
       .version()?
-      .or_else(|| get_user_version_for_directory(current_dir, config))
+      .or_else(|| get_user_version_for_directory(&current_dir, config))
       .ok_or(Error::CantInferVersion)?;
 
-    let release = match current_version.clone() {
+    let release = match &current_version {
       UserVersion::Full(Version::Semver(actual_version)) => {
         let available_releases = remote_pact_index::list(&config.pact_4x_repo)
           .map_err(|source| Error::CantListRemoteVersions { source })?;
 
         let picked_release = current_version
           .to_release(&available_releases, config)
-          .ok_or(Error::CantFindPactVersion {
+          .ok_or_else(|| Error::CantFindPactVersion {
             requested_version: current_version.clone(),
           })?;
 
         debug!(
           "Resolved {} into Pact version {}",
-          Version::Semver(actual_version).v_str().cyan(),
+          Version::Semver(actual_version.clone()).v_str().cyan(),
           picked_release.tag_name.v_str().cyan()
         );
         picked_release.clone()
       }
       UserVersion::Full(v @ (Version::Bypassed | Version::Alias(_))) => {
-        return Err(Error::UninstallableVersion { version: v });
+        return Err(Error::UninstallableVersion { version: v.clone() });
       }
       UserVersion::Full(Version::Nightly(nightly_tag)) => {
-        let picked_release = remote_pact_index::get_by_tag(&config.pact_5x_repo, &nightly_tag)
+        let picked_release = remote_pact_index::get_by_tag(&config.pact_5x_repo, nightly_tag)
           .map_err(|_| Error::CantFindNightly {
             nightly_tag: nightly_tag.clone(),
           })?;
 
         debug!(
           "Resolved {} into Pact version {}",
-          Version::Nightly(nightly_tag).v_str().cyan(),
-          picked_release.tag_name.v_str().cyan(),
+          Version::Nightly(nightly_tag.clone()).v_str().cyan(),
+          picked_release.tag_name.v_str().cyan()
         );
         picked_release.clone()
       }
@@ -120,13 +106,13 @@ impl Command for Install {
         );
         picked_release.clone()
       }
-      current_version => {
+      _ => {
         let available_releases = remote_pact_index::list(&config.pact_4x_repo)
           .map_err(|source| Error::CantListRemoteVersions { source })?;
 
         current_version
           .to_release(&available_releases, config)
-          .ok_or(Error::CantFindPactVersion {
+          .ok_or_else(|| Error::CantFindPactVersion {
             requested_version: current_version.clone(),
           })?
           .clone()
@@ -140,26 +126,27 @@ impl Command for Install {
       Info,
       "Installing {} ({})",
       format!("Pact {}", &version).cyan(),
-      config.arch.to_string()
+      config.arch.as_str()
     );
-    let Some(download_url) = release.download_url() else {
-      return Err(Error::CantFindReleaseAsset {
-        requested_version: current_version,
-      });
-    };
+
+    let download_url = release
+      .download_url()
+      .ok_or_else(|| Error::CantFindReleaseAsset {
+        requested_version: current_version.clone(),
+      })?;
 
     match install_pact_dist(
       version,
       &download_url,
       config.installations_dir(),
-      &config.arch,
+      config.arch,
       show_progress,
       force_install,
     ) {
       Err(err @ DownloaderError::VersionAlreadyInstalled { .. }) => {
         outln!(config, Error, "{} {}", "warning:".bold().yellow(), err);
       }
-      Err(source) => Err(Error::DownloadError { source })?,
+      Err(source) => return Err(Error::DownloadError { source }),
       Ok(()) => {}
     };
 
@@ -172,7 +159,7 @@ impl Command for Install {
     }
 
     if let Some(tagged_alias) = current_version.inferred_alias() {
-      tag_alias(config, version, &tagged_alias)?;
+      tag_alias(config, &release.tag_name, &tagged_alias)?;
     }
 
     Ok(())
@@ -197,7 +184,7 @@ fn tag_alias(
 
 #[derive(Debug, Error)]
 pub enum Error {
-  #[error("Can't download the requested binary: {}", source)]
+  #[error("Can't download the requested binary: {source}")]
   DownloadError { source: DownloaderError },
   #[error(transparent)]
   IoError {
@@ -206,19 +193,13 @@ pub enum Error {
   },
   #[error("Can't find version in dotfiles. Please provide a version manually to the command.")]
   CantInferVersion,
-  #[error("Having a hard time listing the remote versions: {}", source)]
+  #[error("Having a hard time listing the remote versions: {source}")]
   CantListRemoteVersions { source: crate::http::Error },
-  #[error(
-    "Can't find a Pact version that matches {} in remote",
-    requested_version
-  )]
+  #[error("Can't find a Pact version that matches {requested_version} in remote")]
   CantFindPactVersion { requested_version: UserVersion },
-  #[error(
-    "Can't find a release asset for the requested version: {}",
-    requested_version
-  )]
+  #[error("Can't find a release asset for the requested version: {requested_version}")]
   CantFindReleaseAsset { requested_version: UserVersion },
-  #[error("Can't find nightly version named {}", nightly_tag)]
+  #[error("Can't find nightly version named {nightly_tag}")]
   CantFindNightly { nightly_tag: String },
   #[error("Can't find any versions in the upstream version index.")]
   CantFindLatest,
@@ -228,7 +209,6 @@ pub enum Error {
   TooManyVersionsProvided,
 }
 
-#[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -257,13 +237,11 @@ mod tests {
       config
         .installations_dir()
         .join("v4.11.0")
-        // .join("installation")
         .canonicalize()
         .ok()
     );
   }
 
-  // latest 4.12 doesn't have macos binaries
   #[test]
   fn test_install_latest() {
     let base_dir = tempfile::tempdir().unwrap();
@@ -286,11 +264,11 @@ mod tests {
     assert!(config
       .installations_dir()
       .join(latest_version.to_string())
-      // .join("installation")
       .canonicalize()
       .unwrap()
       .exists());
   }
+
   #[test]
   fn test_install_nightly() {
     let base_dir = tempfile::tempdir().unwrap();
@@ -306,14 +284,15 @@ mod tests {
     .apply(&config)
     .expect("Can't install");
 
-    let latest_release =
-      remote_pact_index::latest(&config.pact_5x_repo).expect("Can't get pact version list");
-    let latest_version = latest_release.tag_name.clone();
+    let nightly_release =
+      remote_pact_index::get_by_tag(&config.pact_5x_repo, &String::from("nightly"))
+        .expect("Can't get pact version list");
+    let latest_version = nightly_release.tag_name.clone();
+    println!("{:?}", latest_version);
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()
       .join(latest_version.to_string())
-      // .join("installation")
       .canonicalize()
       .unwrap()
       .exists());

@@ -15,7 +15,8 @@ impl UserVersionReader {
     match self {
       Self::Direct(uv) => Some(uv),
       Self::Path(pathbuf) if pathbuf.is_file() => get_user_version_for_file(pathbuf, config),
-      Self::Path(pathbuf) => get_user_version_for_directory(pathbuf, config),
+      Self::Path(pathbuf) if pathbuf.is_dir() => get_user_version_for_directory(pathbuf, config),
+      _ => None,
     }
   }
 }
@@ -24,12 +25,11 @@ impl FromStr for UserVersionReader {
   type Err = node_semver::SemverError;
 
   fn from_str(s: &str) -> Result<Self, Self::Err> {
-    let pathbuf = PathBuf::from_str(s);
-    let user_version = UserVersion::from_str(s);
-    match (user_version, pathbuf) {
-      (_, Ok(pathbuf)) if pathbuf.exists() => Ok(Self::Path(pathbuf)),
-      (Ok(user_version), _) => Ok(Self::Direct(user_version)),
-      (Err(user_version_err), _) => Err(user_version_err),
+    let pathbuf = PathBuf::from(s);
+    if pathbuf.exists() {
+      Ok(Self::Path(pathbuf))
+    } else {
+      UserVersion::from_str(s).map(Self::Direct)
     }
   }
 }
@@ -84,7 +84,7 @@ mod tests {
   #[test]
   fn test_from_str_file() {
     let mut file = NamedTempFile::new().unwrap();
-    write!(file, "4").unwrap();
+    file.write_all(b"14").unwrap();
     let pathbuf = file.path().to_path_buf();
 
     let user_version = UserVersionReader::from_str(pathbuf.to_str().unwrap());
@@ -93,8 +93,7 @@ mod tests {
 
   #[test]
   fn test_non_existing_path() {
-    let user_version =
-      UserVersionReader::from_str("/tmp/some_random_text_that_probably_does_not_exist");
+    let user_version = UserVersionReader::from_str("/tmp/non_existing_path");
     assert!(matches!(
       user_version,
       Ok(UserVersionReader::Direct(UserVersion::Full(
@@ -102,13 +101,4 @@ mod tests {
       )))
     ));
   }
-
-  // #[test]
-  // fn test_a_version_number() {
-  //   let user_version = UserVersionReader::from_str("12.0");
-  //   assert!(matches!(
-  //     user_version,
-  //     Ok(UserVersionReader::Direct(UserVersion::MajorMinor(12, 0)))
-  //   ));
-  // }
 }
