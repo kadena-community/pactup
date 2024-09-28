@@ -16,7 +16,7 @@ impl UserVersionReader {
       Self::Direct(uv) => Some(uv),
       Self::Path(pathbuf) if pathbuf.is_file() => get_user_version_for_file(pathbuf, config),
       Self::Path(pathbuf) if pathbuf.is_dir() => get_user_version_for_directory(pathbuf, config),
-      _ => None,
+      Self::Path(_) => None,
     }
   }
 }

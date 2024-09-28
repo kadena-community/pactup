@@ -288,7 +288,6 @@ mod tests {
       remote_pact_index::get_by_tag(&config.pact_5x_repo, &String::from("nightly"))
         .expect("Can't get pact version list");
     let latest_version = nightly_release.tag_name.clone();
-    println!("{:?}", latest_version);
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()
