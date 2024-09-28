@@ -60,8 +60,6 @@ impl StoredAlias {
     } else {
       self
         .destination_path
-        .parent()
-        .unwrap()
         .file_name()
         .expect("must have basename")
         .to_str()
