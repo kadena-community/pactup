@@ -251,7 +251,7 @@ Options:
           [possible values: auto, never, always]
 
       --force
-          force install even if the version is already installed
+          Force install even if the version is already installed
 
       --log-level <LOG_LEVEL>
           The log level of pactup commands
