@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.19
+
+### Patch Changes
+
+- [#36](https://github.com/kadena-community/pactup/pull/36) [`cd1943c`](https://github.com/kadena-community/pactup/commit/cd1943c72dae52fd66d3d63208434eae395530c0) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Fix nightly versions and aliases
+
 ## 0.2.18
 
 ### Patch Changes
