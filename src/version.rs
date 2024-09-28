@@ -98,13 +98,6 @@ impl Version {
   pub fn is_nightly(&self) -> bool {
     matches!(self, Self::Nightly(_))
   }
-
-  pub fn digits_only(&self) -> Option<String> {
-    match self {
-      Self::Semver(v) => Some(v.to_string().trim_start_matches('v').to_string()),
-      _ => None,
-    }
-  }
 }
 
 impl<'de> serde::Deserialize<'de> for Version {
