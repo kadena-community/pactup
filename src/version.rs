@@ -85,9 +85,14 @@ impl Version {
 
   pub fn root_path(&self, config: &config::PactupConfig) -> Option<PathBuf> {
     let path = self.installation_path(config);
-    let mut canon_path = path.canonicalize().ok()?;
-    canon_path.pop();
-    Some(canon_path)
+    path.canonicalize().ok().and_then(|canon_path| {
+      // If the path is a directory and it exists,also not the installations directory
+      if canon_path.is_dir() && canon_path.exists() && canon_path != config.installations_dir() {
+        Some(canon_path)
+      } else {
+        None
+      }
+    })
   }
 
   pub fn is_nightly(&self) -> bool {
