@@ -119,7 +119,7 @@ Check out the following guides for the shell you use:
 Add the following to your `.bashrc` profile:
 
 ```bash
-eval "$(pactup env --use-on-cd)"
+eval "$(pactup env --use-on-cd --shell bash)"
 ```
 
 #### Zsh
@@ -127,7 +127,7 @@ eval "$(pactup env --use-on-cd)"
 Add the following to your `.zshrc` profile:
 
 ```zsh
-eval "$(pactup env --use-on-cd)"
+eval "$(pactup env --use-on-cd --shell zsh)"
 ```
 
 #### Fish shell
@@ -135,7 +135,7 @@ eval "$(pactup env --use-on-cd)"
 Create `~/.config/fish/conf.d/pactup.fish` add this line to it:
 
 ```fish
-pactup env --use-on-cd | source
+pactup env --use-on-cd --shell fish | source
 ```
 
 #### PowerShell
@@ -143,11 +143,12 @@ pactup env --use-on-cd | source
 Add the following to the end of your profile file:
 
 ```powershell
-pactup env --use-on-cd | Out-String | Invoke-Expression
+pactup env --use-on-cd --shell power-shell | Out-String | Invoke-Expression
 ```
 
 - For macOS/Linux, the profile is located at `~/.config/powershell/Microsoft.PowerShell_profile.ps1`
 - On Windows to edit your profile you can run this in a PowerShell
+
   ```powershell
   notepad $profile
   ```
@@ -199,7 +200,7 @@ You can replace `%CMDER_ROOT%` with any other convenient path too.
 
 PRs welcome :tada:
 
-### Developing:
+### Developing
 
 ```sh
 # Install Rust
@@ -234,7 +235,7 @@ This error occurs when installing the `development-latest` nightly version, and 
 
 To resolve this, update to the latest `pactup` version (>=0.2.18), and run:
 
-```
+```bash
 sudo pactup uninstall development-latest
 ```
 

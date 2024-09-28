@@ -63,41 +63,26 @@ impl Command for Env {
     }
 
     let multishell_path = make_symlink(config)?;
-    let multishell_path_str = multishell_path.to_str().unwrap().to_owned();
+    let base_dir = config.base_dir_with_default();
 
-    let binary_path = if cfg!(windows) {
-      multishell_path
-    } else {
-      multishell_path.join("bin")
-    };
-
-    let env_vars = HashMap::from([
-      ("PACTUP_MULTISHELL_PATH", multishell_path_str),
+    let env_vars = [
+      ("PACTUP_MULTISHELL_PATH", multishell_path.to_str().unwrap()),
       (
         "PACTUP_VERSION_FILE_STRATEGY",
-        config.version_file_strategy().as_str().to_owned(),
+        config.version_file_strategy().as_str(),
       ),
-      (
-        "PACTUP_DIR",
-        config.base_dir_with_default().to_str().unwrap().to_owned(),
-      ),
-      (
-        "PACTUP_LOGLEVEL",
-        <&'static str>::from(config.log_level().clone()).to_owned(),
-      ),
-      (
-        "PACTUP_PACT4X_REPO",
-        config.pact_4x_repo.as_str().to_owned(),
-      ),
-      (
-        "PACTUP_PACT5X_REPO",
-        config.pact_5x_repo.as_str().to_owned(),
-      ),
-      ("PACTUP_ARCH", config.arch.to_string()),
-    ]);
+      ("PACTUP_DIR", base_dir.to_str().unwrap()),
+      ("PACTUP_LOGLEVEL", config.log_level().as_str()),
+      ("PACTUP_PACT4X_REPO", config.pact_4x_repo.as_str()),
+      ("PACTUP_PACT5X_REPO", config.pact_5x_repo.as_str()),
+      ("PACTUP_ARCH", config.arch.as_str()),
+    ];
 
     if self.json {
-      println!("{}", serde_json::to_string(&env_vars).unwrap());
+      println!(
+        "{}",
+        serde_json::to_string(&HashMap::from(env_vars)).unwrap()
+      );
       return Ok(());
     }
 
@@ -107,7 +92,13 @@ impl Command for Env {
       .or_else(infer_shell)
       .ok_or(Error::CantInferShell)?;
 
-    println!("{}", shell.path(&binary_path)?);
+    let binary_path = if cfg!(windows) {
+      shell.path(&multishell_path)
+    } else {
+      shell.path(&multishell_path.join("bin"))
+    };
+
+    println!("{}", binary_path?);
 
     for (name, value) in &env_vars {
       println!("{}", shell.set_env_var(name, value));

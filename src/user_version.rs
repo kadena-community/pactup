@@ -39,7 +39,7 @@ impl UserVersion {
       .max_by_key(|x| &x.tag_name)
   }
 
-  pub fn alias_name(&self) -> Option<String> {
+  pub fn alias_name(&self) -> Option<&str> {
     match self {
       Self::Full(version) => version.alias_name(),
       _ => None,
@@ -50,9 +50,12 @@ impl UserVersion {
     match (self, version) {
       (Self::Full(a), b) if a == b => true,
       (Self::Full(user_version), maybe_alias) => {
-        match (user_version.alias_name(), maybe_alias.find_aliases(config)) {
-          (None, _) | (_, Err(_)) => false,
-          (Some(user_alias), Ok(aliases)) => aliases.iter().any(|alias| alias.name() == user_alias),
+        if let (Some(user_alias), Ok(aliases)) =
+          (user_version.alias_name(), maybe_alias.find_aliases(config))
+        {
+          aliases.iter().any(|alias| alias.name() == user_alias)
+        } else {
+          false
         }
       }
       (Self::SemverRange(range), Version::Semver(semver)) => semver.satisfies(range),
@@ -76,11 +79,6 @@ impl UserVersion {
   }
 }
 
-fn next_of<'a, T: FromStr, It: Iterator<Item = &'a str>>(i: &mut It) -> Option<T> {
-  let x = i.next()?;
-  T::from_str(x).ok()
-}
-
 impl std::fmt::Display for UserVersion {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
@@ -92,24 +90,45 @@ impl std::fmt::Display for UserVersion {
   }
 }
 
-fn skip_first_v(str: &str) -> &str {
-  str.strip_prefix('v').unwrap_or(str)
+fn skip_first_v(s: &str) -> &str {
+  s.strip_prefix('v').unwrap_or(s)
 }
 
 impl FromStr for UserVersion {
   type Err = node_semver::SemverError;
   fn from_str(s: &str) -> Result<UserVersion, Self::Err> {
-    match Version::parse(s) {
-      Ok(v) => Ok(Self::Full(v)),
-      Err(e) => {
-        let mut parts = skip_first_v(s.trim()).split('.');
-        match (next_of::<u64, _>(&mut parts), next_of::<u64, _>(&mut parts)) {
-          (Some(major), None) => Ok(Self::OnlyMajor(major)),
-          (Some(major), Some(minor)) => Ok(Self::MajorMinor(major, minor)),
-          _ => Err(e),
-        }
+    let s = s.trim();
+
+    // Trim leading 'v'
+    let s_no_v = skip_first_v(s);
+    let parts: Vec<&str> = s_no_v.split('.').collect();
+
+    // Attempt to parse as OnlyMajor
+    if parts.len() == 1 {
+      if let Ok(major) = parts[0].parse::<u64>() {
+        return Ok(UserVersion::OnlyMajor(major));
       }
     }
+    // Attempt to parse as MajorMinor
+    else if parts.len() == 2 {
+      if let (Ok(major), Ok(minor)) = (parts[0].parse::<u64>(), parts[1].parse::<u64>()) {
+        return Ok(UserVersion::MajorMinor(major, minor));
+      }
+    }
+    // Attempt to parse as Full Version
+    else if parts.len() == 3 {
+      if let Ok(version) = Version::parse(s) {
+        return Ok(UserVersion::Full(version));
+      }
+    }
+
+    // Try to parse as Semver Range
+    if let Ok(range) = node_semver::Range::parse(s) {
+      return Ok(UserVersion::SemverRange(range));
+    }
+
+    // Finally, attempt to parse as a Version (could be an alias or special version)
+    Version::parse(s).map(UserVersion::Full)
   }
 }
 
@@ -117,10 +136,11 @@ impl FromStr for UserVersion {
 impl PartialEq for UserVersion {
   fn eq(&self, other: &Self) -> bool {
     match (self, other) {
-      (Self::OnlyMajor(a), Self::OnlyMajor(b)) if a == b => true,
-      (Self::MajorMinor(a1, a2), Self::MajorMinor(b1, b2)) if (a1, a2) == (b1, b2) => true,
-      (Self::Full(v1), Self::Full(v2)) if v1 == v2 => true,
-      (_, _) => false,
+      (Self::OnlyMajor(a), Self::OnlyMajor(b)) => a == b,
+      (Self::MajorMinor(a1, a2), Self::MajorMinor(b1, b2)) => a1 == b1 && a2 == b2,
+      (Self::Full(v1), Self::Full(v2)) => v1 == v2,
+      (Self::SemverRange(r1), Self::SemverRange(r2)) => r1 == r2,
+      _ => false,
     }
   }
 }
@@ -137,11 +157,11 @@ mod tests {
     assert_eq!(version, Some(UserVersion::OnlyMajor(10)));
   }
 
-  // #[test]
-  // fn test_parsing_major_minor() {
-  //   let version = UserVersion::from_str("10.20").ok();
-  //   assert_eq!(version, Some(UserVersion::MajorMinor(10, 20)));
-  // }
+  #[test]
+  fn test_parsing_major_minor() {
+    let version = UserVersion::from_str("10.20").ok();
+    assert_eq!(version, Some(UserVersion::MajorMinor(10, 20)));
+  }
 
   #[test]
   fn test_parsing_only_major_with_v() {

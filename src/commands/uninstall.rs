@@ -59,7 +59,7 @@ impl Command for Uninstall {
       })?;
 
     debug!("Removing Pact version from {:?}", root_path);
-    std::fs::remove_dir_all(root_path).map_err(|source| Error::CantDeleteNodeVersion { source })?;
+    std::fs::remove_dir_all(root_path).map_err(|source| Error::CantDeletePactVersion { source })?;
     outln!(
       config,
       Info,
@@ -102,7 +102,7 @@ pub enum Error {
     source: std::io::Error,
   },
   #[error("Can't delete Pact version: {}", source)]
-  CantDeleteNodeVersion { source: std::io::Error },
+  CantDeletePactVersion { source: std::io::Error },
   #[error("Can't delete symlink: {}", source)]
   CantDeleteSymlink { source: std::io::Error },
 }

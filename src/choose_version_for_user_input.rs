@@ -50,7 +50,7 @@ pub fn choose_version_for_user_input<'a>(
       version: Version::Bypassed,
     })
   } else if let Some(alias_name) = requested_version.alias_name() {
-    let alias_path = config.aliases_dir().join(&alias_name);
+    let alias_path = config.aliases_dir().join(alias_name);
     let system_path = system_version::path();
     if matches!(fs::shallow_read_symlink(&alias_path), Ok(shallow_path) if shallow_path == system_path)
     {
@@ -66,7 +66,7 @@ pub fn choose_version_for_user_input<'a>(
       info!("Using Pact for alias {}", alias_name.cyan());
       Some(ApplicableVersion {
         path: alias_path,
-        version: Version::Alias(alias_name),
+        version: Version::Alias(alias_name.to_string()),
       })
     } else {
       return Err(Error::CantFindVersion {

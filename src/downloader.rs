@@ -58,7 +58,7 @@ pub fn install_pact_dist<P: AsRef<Path>>(
   version: &Version,
   download_url: &Url,
   installations_dir: P,
-  arch: &PlatformArch,
+  arch: PlatformArch,
   show_progress: bool,
   force: bool,
 ) -> Result<(), Error> {
@@ -160,7 +160,7 @@ mod tests {
       "https://github.com/kadena-io/pact/releases/download/v4.11.0/pact-4.11.0-linux-20.04.zip",
     )
     .unwrap();
-    install_pact_dist(&version, &pact_dist_mirror, path, &arch, false, false)
+    install_pact_dist(&version, &pact_dist_mirror, path, arch, false, false)
       .expect("Can't install Pact 4.11.0");
 
     let mut location_path = path.join(version.v_str());
