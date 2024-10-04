@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.20
+
+### Patch Changes
+
+- [#39](https://github.com/kadena-community/pactup/pull/39) [`d9d3cfb`](https://github.com/kadena-community/pactup/commit/d9d3cfb224adb9bdab3807db185659b82f58e1d7) Thanks [@salamaashoush](https://github.com/salamaashoush)! - fix nightly install
+
 ## 0.2.19
 
 ### Patch Changes
