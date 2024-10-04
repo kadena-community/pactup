@@ -32,7 +32,7 @@ log = "0.4"
 node-semver = "2.1"
 sysinfo = "0.31"
 tar = "0.4"
-tempfile = "3.12"
+tempfile = "3.13"
 thiserror = "1.0"
 zip = "2.2"
 duct = "0.13"
@@ -41,7 +41,7 @@ test-log = "0.2"
 flate2 = "1.0"
 walkdir = "2.5"
 indicatif = { version = "0.17", features = ["improved_unicode"] }
-regex = "1.10"
+regex = "1.11"
 
 [dev-dependencies]
 pretty_assertions = "1.4"

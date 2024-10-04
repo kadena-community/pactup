@@ -36,8 +36,8 @@ impl Release {
     match platform {
       Platform(PlatformOS::Linux, PlatformArch::X64) => {
         let regex = if version.is_nightly() {
-          // match the nightly version format for linux pact-binary-bundle.ubuntu-*.<tar.gz | zip>
-          r"^(pact-binary-bundle\.ubuntu-latest|pact-nightly-linux(-\d+\.\d+)?)\.(tar\.gz|zip)$"
+          // match the nightly version format for linux pact-nightly-linux-x64.<tar.gz | zip>
+          r"^pact-nightly-linux-x64\.(tar\.gz|zip)$"
         } else {
           // match the stable version format for linux pact-<version>-<linux|ubuntu>-<ubuntu_version>.<tar.gz | zip>
           r"^pact-(\d+(\.\d+){0,2})(-(linux|ubuntu))?(-\d+\.\d+)?\.(tar\.gz|zip)$"
@@ -46,8 +46,8 @@ impl Release {
       }
       Platform(PlatformOS::MacOS, PlatformArch::X64) => {
         let regex = if version.is_nightly() {
-          //  match the nightly version format for mac pact-binary-bundle.macos-latest.<tar.gz|zip>
-          r"^(pact-binary-bundle\.macos-latest|pact-nightly-osx)\.(tar\.gz|zip)$"
+          //  match the nightly version format for mac pact-nightly-darwin-x64.<tar.gz|zip>
+          r"^pact-nightly-darwin-x64\.(tar\.gz|zip)$"
         } else {
           // match the stable version format for mac pact-<version>-osx.<tar.gz | zip>
           r"^pact-(\d+(\.\d+){0,2})-osx\.(tar\.gz|zip)$"
@@ -56,8 +56,8 @@ impl Release {
       }
       Platform(PlatformOS::MacOS, PlatformArch::Arm64) => {
         let regex = if version.is_nightly() {
-          //  match the nightly version format for mac pact-binary-bundle.macos-m1.<tar.gz|zip>
-          r"^(pact-binary-bundle\.macos-m1|pact-nightly-aarch64-osx)\.(tar\.gz|zip)$"
+          //  match the nightly version format for mac pact-nightly-darwin-aarch64.<tar.gz|zip>
+          r"^pact-nightly-darwin-aarch64\.(tar\.gz|zip)$"
         } else {
           // match the stable version format for mac pact-<version>-aarch64-osx.<tar.gz | zip>
           r"^pact-(\d+(\.\d+){0,2})-aarch64-osx\.(tar\.gz|zip)$"
@@ -168,7 +168,7 @@ mod tests {
     assert!(!release.unwrap().is_nightly());
 
     let repo = "kadena-io/pact-5".to_string();
-    let expected_version = Version::parse("development-latest").unwrap();
+    let expected_version = Version::parse("nightly").unwrap();
     let mut versions = list(&repo).expect("Can't get HTTP data");
     let release = versions
       .drain(..)
@@ -188,7 +188,7 @@ mod tests {
     assert!(release.has_supported_asset());
 
     let repo = "kadena-io/pact-5".to_string();
-    let tag = "development-latest".to_string();
+    let tag = "nightly".to_string();
     let release = get_by_tag(&repo, &tag).expect("Can't get HTTP data");
     assert_eq!(release.tag_name.to_string(), tag);
     assert!(release.tag_name.is_nightly());
@@ -202,17 +202,12 @@ mod tests {
     let release = latest(&repo).expect("Can't get HTTP data");
     assert!(!release.tag_name.is_nightly());
     assert!(release.has_supported_asset());
-
-    let repo = "kadena-io/pact-5".to_string();
-    let release = latest(&repo).expect("Can't get HTTP data");
-    assert!(release.tag_name.is_nightly());
-    assert!(release.has_supported_asset());
   }
 
   #[test]
   fn test_version_matcher_nightly_linux() {
     let release = Release {
-      tag_name: Version::parse("development-latest").unwrap(),
+      tag_name: Version::parse("nightly").unwrap(),
       assets: vec![],
       prerelease: false,
       draft: false,
@@ -220,11 +215,8 @@ mod tests {
     let platform = Platform(PlatformOS::Linux, PlatformArch::X64);
     let regex = release.version_matcher_for_platform(&platform).unwrap();
 
-    // Old naming convention
-    assert!(regex.is_match("pact-binary-bundle.ubuntu-latest.tar.gz"));
     // New naming convention
-    assert!(regex.is_match("pact-nightly-linux.tar.gz"));
-    assert!(regex.is_match("pact-nightly-linux-22.04.tar.gz"));
+    assert!(regex.is_match("pact-nightly-linux-x64.tar.gz"));
     // Should not match stable versions
     assert!(!regex.is_match("pact-4.11.0-linux.tar.gz"));
   }
@@ -245,14 +237,13 @@ mod tests {
     assert!(regex.is_match("pact-4.11.0-ubuntu.tar.gz"));
     assert!(regex.is_match("pact-4.11.0-ubuntu-22.04.tar.gz"));
     // Should not match nightly builds
-    assert!(!regex.is_match("pact-nightly-linux.tar.gz"));
-    assert!(!regex.is_match("pact-binary-bundle.ubuntu-latest.tar.gz"));
+    assert!(!regex.is_match("pact-nightly-linux-x64.tar.gz"));
   }
 
   #[test]
   fn test_version_matcher_nightly_macos_x64() {
     let release = Release {
-      tag_name: Version::parse("development-latest").unwrap(),
+      tag_name: Version::parse("nightly").unwrap(),
       assets: vec![],
       prerelease: false,
       draft: false,
@@ -261,10 +252,8 @@ mod tests {
     let platform = Platform(PlatformOS::MacOS, PlatformArch::X64);
     let regex = release.version_matcher_for_platform(&platform).unwrap();
 
-    // Old naming convention
-    assert!(regex.is_match("pact-binary-bundle.macos-latest.tar.gz"));
     // New naming convention
-    assert!(regex.is_match("pact-nightly-osx.tar.gz"));
+    assert!(regex.is_match("pact-nightly-darwin-x64.tar.gz"));
     // Should not match stable versions
     assert!(!regex.is_match("pact-4.11.0-osx.tar.gz"));
   }
@@ -283,14 +272,13 @@ mod tests {
 
     assert!(regex.is_match("pact-4.11.0-osx.tar.gz"));
     // Should not match nightly builds
-    assert!(!regex.is_match("pact-nightly-osx.tar.gz"));
-    assert!(!regex.is_match("pact-binary-bundle.macos-latest.tar.gz"));
+    assert!(!regex.is_match("pact-nightly-darwin-aarch64.tar.gz"));
   }
 
   #[test]
   fn test_version_matcher_nightly_macos_arm64() {
     let release = Release {
-      tag_name: Version::parse("development-latest").unwrap(),
+      tag_name: Version::parse("nightly").unwrap(),
       assets: vec![],
       prerelease: false,
       draft: false,
@@ -298,10 +286,8 @@ mod tests {
     let platform = Platform(PlatformOS::MacOS, PlatformArch::Arm64);
     let regex = release.version_matcher_for_platform(&platform).unwrap();
 
-    // Old naming convention
-    assert!(regex.is_match("pact-binary-bundle.macos-m1.tar.gz"));
     // New naming convention
-    assert!(regex.is_match("pact-nightly-aarch64-osx.tar.gz"));
+    assert!(regex.is_match("pact-nightly-darwin-aarch64.tar.gz"));
     // Should not match stable versions
     assert!(!regex.is_match("pact-4.11.0-aarch64-osx.tar.gz"));
   }
@@ -319,7 +305,6 @@ mod tests {
 
     assert!(regex.is_match("pact-4.11.0-aarch64-osx.tar.gz"));
     // Should not match nightly builds
-    assert!(!regex.is_match("pact-nightly-aarch64-osx.tar.gz"));
-    assert!(!regex.is_match("pact-binary-bundle.macos-m1.tar.gz"));
+    assert!(!regex.is_match("pact-nightly-darwin-aarch64.tar.gz"));
   }
 }
