@@ -77,6 +77,6 @@ strip         = true
 ignored = ["csv", "junction"]
 
 [package.metadata.binstall]
-pkg-url = "{ repo }/releases/download/pactup_v{ version }/{ name }-{ target-family }-{ target-arch }-{ target-libc }{ archive-suffix }"
+pkg-url = "{ repo }/releases/download/pactup_v{ version }/{ name }-{ target-family }-{ target-arch }-{ target-libc }.tar.gz"
 bin-dir = "{ name }-{ target-family }-{ target-arch }-{ target-libc }{ binary-ext }"
-pkg-fmt = "tar.gz"
+pkg-fmt = "tgz"
