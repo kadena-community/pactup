@@ -14,7 +14,7 @@ pub enum SubCommand {
   LsLocal(commands::ls_local::LsLocal),
 
   /// Install a new Pact version
-  #[clap(name = "install", bin_name = "install")]
+  #[clap(name = "install", bin_name = "install", visible_aliases = &["i"])]
   Install(commands::install::Install),
 
   /// Change Pact version
@@ -67,7 +67,7 @@ pub enum SubCommand {
   ///
   /// > Warning: when providing an alias, it will remove the Pact version the alias
   /// > is pointing to, along with the other aliases that point to the same version.
-  #[clap(name = "uninstall", bin_name = "uninstall")]
+  #[clap(name = "uninstall", bin_name = "uninstall", visible_aliases = &["uni"])]
   Uninstall(commands::uninstall::Uninstall),
 
   /// Print the path to installed Pact version

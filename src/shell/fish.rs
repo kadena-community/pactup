@@ -1,7 +1,7 @@
 use crate::version_file_strategy::VersionFileStrategy;
 
 use super::shell::Shell;
-use indoc::{formatdoc, indoc};
+use indoc::formatdoc;
 use std::path::Path;
 
 #[derive(Debug)]
@@ -26,15 +26,21 @@ impl Shell for Fish {
   }
 
   fn use_on_cd(&self, config: &crate::config::PactupConfig) -> anyhow::Result<String> {
+    let version_file_exists_condition = if config.resolve_engines() {
+      "test -f .pact-version -o -f .pactrc -o -f package.json"
+    } else {
+      "test -f .pact-version -o -f .pactrc"
+    };
     let autoload_hook = match config.version_file_strategy() {
-      VersionFileStrategy::Local => indoc!(
-        r"
-                    if test -f .pact-version -o -f .pactrc
+      VersionFileStrategy::Local => formatdoc!(
+        r#"
+                    if {version_file_exists_condition}
                         pactup use --silent-if-unchanged
-                    end
-                "
+                    fi
+                "#,
+        version_file_exists_condition = version_file_exists_condition,
       ),
-      VersionFileStrategy::Recursive => r"pactup use --silent-if-unchanged",
+      VersionFileStrategy::Recursive => String::from(r"pactup use --silent-if-unchanged"),
     };
     Ok(formatdoc!(
       r#"

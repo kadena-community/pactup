@@ -214,7 +214,7 @@ setup_shell() {
       echo 'PACTUP_PATH="'"$INSTALL_DIR"'"'
       echo 'if [ -d "$PACTUP_PATH" ]; then'
       echo '  export PATH="$PACTUP_PATH:$PATH"'
-      echo '  eval "`fnm env --use-on-cd`"'
+      echo '  eval "`pactup env --use-on-cd`"'
       echo 'fi'
     } | tee -a "$CONF_FILE"
 

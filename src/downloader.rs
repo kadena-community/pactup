@@ -1,13 +1,10 @@
-use crate::archive;
-use crate::archive::extract::ArchiveType;
-use crate::archive::{Error as ExtractError, Extract};
+use crate::archive::{Archive, Error as ExtractError};
 use crate::directory_portal::DirectoryPortal;
 use crate::progress::ResponseProgress;
 use crate::system_info::PlatformArch;
 use crate::version::Version;
 use indicatif::ProgressDrawTarget;
 use log::debug;
-use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use thiserror::Error;
@@ -30,8 +27,8 @@ pub enum Error {
     #[from]
     source: ExtractError,
   },
-  // #[error("The downloaded archive is empty")]
-  // TarIsEmpty,
+  #[error("The downloaded archive is empty")]
+  TarIsEmpty,
   #[error("{} for {} not found upstream.\nYou can `pactup ls-remote` to see available versions or try a different `--arch`.", version, arch)]
   VersionNotFound {
     version: Version,
@@ -39,18 +36,6 @@ pub enum Error {
   },
   #[error("Version already installed at {:?}", path)]
   VersionAlreadyInstalled { path: PathBuf },
-}
-
-fn extract_archive_into(
-  path: impl AsRef<Path>,
-  response: impl Read,
-  download_url: &Url,
-) -> Result<(), Error> {
-  let _ = match ArchiveType::from(download_url)? {
-    ArchiveType::TarGz => archive::TarGz::new(response).extract_into(path),
-    ArchiveType::Zip => archive::Zip::new(response).extract_into(path),
-  };
-  Ok(())
 }
 
 /// Install a pact asset from a URL into a directory
@@ -89,40 +74,38 @@ pub fn install_pact_dist<P: AsRef<Path>>(
   debug!("Creating directory portal");
   let portal = DirectoryPortal::new_in(&temp_installations_dir, version_installation_dir);
 
-  debug!("Going to call for {}", download_url);
-  let response = crate::http::get(download_url.as_str())?;
+  for _ in Archive::supported() {
+    debug!("Going to call for {}", download_url);
+    let response = crate::http::get(download_url.as_str())?;
 
-  if response.status() == 404 {
-    return Err(Error::VersionNotFound {
-      version: version.clone(),
-      arch,
-    });
+    if !response.status().is_success() {
+      continue;
+    }
+
+    debug!("Extracting response...");
+    if show_progress {
+      Archive::extract_archive_into(
+        portal.as_ref(),
+        ResponseProgress::new(response, ProgressDrawTarget::stderr()),
+        download_url.as_str(),
+      )?;
+    } else {
+      Archive::extract_archive_into(portal.as_ref(), response, download_url.as_str())?;
+    }
+    debug!("Extraction completed");
+    std::fs::read_dir(&portal)?
+      .next()
+      .ok_or(Error::TarIsEmpty)??;
+
+    portal.teleport()?;
+
+    return Ok(());
   }
 
-  debug!("Extracting response...");
-  if show_progress {
-    extract_archive_into(
-      &portal,
-      ResponseProgress::new(response, ProgressDrawTarget::stderr()),
-      download_url,
-    )?;
-  } else {
-    extract_archive_into(&portal, response, download_url)?;
-  }
-  // extract_archive_into(&portal, response, download_url)?;
-  debug!("Extraction completed");
-
-  // let installed_directory = std::fs::read_dir(&portal)?
-  //   .next()
-  //   .ok_or(Error::TarIsEmpty)??;
-  // let installed_directory = installed_directory.path();
-
-  // let renamed_installation_dir = portal.join("installation");
-  // std::fs::rename(installed_directory, renamed_installation_dir)?;
-
-  portal.teleport()?;
-
-  Ok(())
+  Err(Error::VersionNotFound {
+    version: version.clone(),
+    arch,
+  })
 }
 
 #[cfg(test)]
