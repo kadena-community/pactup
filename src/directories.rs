@@ -25,7 +25,7 @@ fn cache_dir(basedirs: &impl BaseStrategy) -> PathBuf {
   xdg_dir("XDG_CACHE_HOME").unwrap_or_else(|| basedirs.cache_dir())
 }
 
-/// A helper struct for directories in fnm that uses XDG Base Directory Specification
+/// A helper struct for directories in pactup that uses XDG Base Directory Specification
 /// if applicable for the platform.
 #[derive(Debug)]
 pub struct Directories(

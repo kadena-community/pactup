@@ -48,29 +48,5 @@ impl From<walkdir::Error> for Error {
   }
 }
 pub trait Extract {
-  fn extract_into<P: AsRef<Path>>(self, path: P) -> Result<(), Error>;
-}
-
-pub enum ArchiveType {
-  TarGz,
-  Zip,
-}
-
-impl ArchiveType {
-  pub fn from(url: &url::Url) -> Result<Self, Error> {
-    let archive_type = url
-      .path_segments()
-      .and_then(std::iter::Iterator::last)
-      .and_then(|last| last.split('.').last())
-      .ok_or(Error::UnknownArchiveType {
-        content_type: "unknown".to_string(),
-      })?;
-    match archive_type {
-      "gz" => Ok(Self::TarGz),
-      "zip" => Ok(Self::Zip),
-      _ => Err(Error::UnknownArchiveType {
-        content_type: archive_type.to_string(),
-      }),
-    }
-  }
+  fn extract_into(self: Box<Self>, path: &Path) -> Result<(), Error>;
 }

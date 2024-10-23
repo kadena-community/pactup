@@ -1,7 +1,7 @@
 use crate::version_file_strategy::VersionFileStrategy;
 
 use super::shell::Shell;
-use indoc::{formatdoc, indoc};
+use indoc::formatdoc;
 use std::path::Path;
 
 #[derive(Debug)]
@@ -30,15 +30,21 @@ impl Shell for Zsh {
   }
 
   fn use_on_cd(&self, config: &crate::config::PactupConfig) -> anyhow::Result<String> {
+    let version_file_exists_condition = if config.resolve_engines() {
+      "-f .pact-version || -f .pactrc || -f package.json"
+    } else {
+      "-f .pact-version || -f .pactrc"
+    };
     let autoload_hook = match config.version_file_strategy() {
-      VersionFileStrategy::Local => indoc!(
-        r"
-          if [[ -f .pact-version || -f .pactrc ]]; then
-              pactup use --silent-if-unchanged
-          fi
-        "
+      VersionFileStrategy::Local => formatdoc!(
+        r#"
+                    if [[ {version_file_exists_condition} ]]; then
+                        pactup use --silent-if-unchanged
+                    fi
+                "#,
+        version_file_exists_condition = version_file_exists_condition,
       ),
-      VersionFileStrategy::Recursive => r"pactup use --silent-if-unchanged",
+      VersionFileStrategy::Recursive => String::from(r"pactup use --silent-if-unchanged"),
     };
     Ok(formatdoc!(
       r#"

@@ -1,3 +1,5 @@
+use log::debug;
+
 use super::extract::{Error, Extract};
 
 use std::{io::Read, path::Path};
@@ -5,31 +7,36 @@ use std::{io::Read, path::Path};
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
-pub struct TarGz<R: Read> {
-  response: R,
+pub enum Tar<R: Read> {
+  /// Tar archive with XZ compression
+  Xz(R),
+  /// Tar archive with Gzip compression
+  Gz(R),
 }
-
-impl<R: Read> TarGz<R> {
-  #[allow(dead_code)]
-  pub fn new(response: R) -> Self {
-    Self { response }
-  }
-}
-
-impl<R: Read> Extract for TarGz<R> {
-  fn extract_into<P: AsRef<Path>>(self, path: P) -> Result<(), Error> {
-    let gz_stream = flate2::read::GzDecoder::new(self.response);
-    let mut tar_archive = tar::Archive::new(gz_stream);
+impl<R: Read> Tar<R> {
+  fn extract_into_impl<P: AsRef<Path>>(self, path: P) -> Result<(), Error> {
+    debug!("Decompressing tar archive");
+    let stream: Box<dyn Read> = match self {
+      Self::Xz(response) => Box::new(xz2::read::XzDecoder::new(response)),
+      Self::Gz(response) => Box::new(flate2::read::GzDecoder::new(response)),
+    };
+    let mut tar_archive = tar::Archive::new(stream);
     tar_archive.set_preserve_permissions(false);
     tar_archive.set_preserve_ownerships(false);
     tar_archive.set_overwrite(true);
+    debug!("Extracting tar archive into {:?}", path.as_ref());
     // First, extract everything, even if the permissions are restrictive
     tar_archive.unpack(&path)?;
 
+    debug!("Fixing permissions for extracted files and directories");
     // Now recursively set permissions for all directories and files
     fix_permissions_recursively(path.as_ref())?;
-
     Ok(())
+  }
+}
+impl<R: Read> Extract for Tar<R> {
+  fn extract_into(self: Box<Self>, path: &Path) -> Result<(), Error> {
+    self.extract_into_impl(path)
   }
 }
 

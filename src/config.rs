@@ -79,8 +79,12 @@ pub struct PactupConfig {
   version_file_strategy: VersionFileStrategy,
 
   /// Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-  /// Experimental: This feature is subject to change.
+  /// This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+  ///
   /// Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+  /// Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+  ///         In the future, disabling it might be a no-op, so it's worth knowing any reason to
+  ///         do that.
   #[clap(
     long,
     env = "PACTUP_RESOLVE_ENGINES",
@@ -88,7 +92,11 @@ pub struct PactupConfig {
     hide_env_values = true,
     verbatim_doc_comment
   )]
-  resolve_engines: bool,
+  #[expect(
+    clippy::option_option,
+    reason = "clap Option<Option<T>> supports --x and --x=value syntaxes"
+  )]
+  resolve_engines: Option<Option<bool>>,
 
   #[clap(skip)]
   directories: Directories,
@@ -105,7 +113,7 @@ impl Default for PactupConfig {
       arch: PlatformArch::default(),
       version_file_strategy: VersionFileStrategy::default(),
       directories: Directories::default(),
-      resolve_engines: false,
+      resolve_engines: None,
     }
   }
 }
@@ -116,7 +124,7 @@ impl PactupConfig {
   }
 
   pub fn resolve_engines(&self) -> bool {
-    self.resolve_engines
+    self.resolve_engines.flatten().unwrap_or(true)
   }
 
   pub fn log_level(&self) -> LogLevel {

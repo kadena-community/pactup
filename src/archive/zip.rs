@@ -18,8 +18,7 @@ impl<R: Read> Zip<R> {
 }
 
 impl<R: Read> Extract for Zip<R> {
-  fn extract_into<P: AsRef<Path>>(mut self, path: P) -> Result<(), Error> {
-    let path = path.as_ref();
+  fn extract_into(mut self: Box<Self>, path: &Path) -> Result<(), Error> {
     let mut tmp_zip_file = tempfile().expect("Can't get a temporary file");
 
     debug!("Created a temporary zip file");
@@ -87,13 +86,13 @@ mod tests {
 
   #[test_log::test]
   fn test_zip_extraction() {
-    let temp_dir = tempfile::tempdir().expect("Can't create a temp directory");
+    let temp_dir = &tempfile::tempdir().expect("Can't create a temp directory");
     let response = crate::http::get(
       "https://github.com/kadena-io/pact/releases/download/v4.12.0/pact-4.12.0-linux-20.04.zip",
     )
     .expect("Can't make request to pact v4.12.0 zip file");
-    Zip::new(response)
-      .extract_into(&temp_dir)
+    Box::new(Zip::new(response))
+      .extract_into(temp_dir.as_ref())
       .expect("Can't unzip files");
     let node_file = temp_dir.as_ref().join("pact");
     assert!(node_file.exists());
