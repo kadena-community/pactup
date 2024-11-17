@@ -147,8 +147,9 @@ pub fn list(repo_url: &str) -> Result<Vec<Release>, Error> {
 /// ```rust
 /// use crate::remote_pact_index::latest;
 /// ```
-pub fn latest(repo_url: &String) -> Result<Release, crate::http::Error> {
-  let index_json_url = format_url(repo_url, "releases/latest");
+pub fn latest(repo_url: &str) -> Result<Release, crate::http::Error> {
+  let base_url = repo_url.trim_end_matches('/');
+  let index_json_url = format_url(base_url, "releases/latest");
   let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
   let value: Release = resp.json()?;
   Ok(value)
@@ -158,8 +159,9 @@ pub fn latest(repo_url: &String) -> Result<Release, crate::http::Error> {
 /// ```rust
 /// use crate::remote_pact_index::get_by_tag;
 ///
-pub fn get_by_tag(repo_url: &String, tag: &String) -> Result<Release, crate::http::Error> {
-  let index_json_url = format_url(repo_url, &format!("releases/tags/{tag}"));
+pub fn get_by_tag(repo_url: &str, tag: &String) -> Result<Release, crate::http::Error> {
+  let base_url = repo_url.trim_end_matches('/');
+  let index_json_url = format_url(base_url, &format!("releases/tags/{tag}"));
   let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
   let value: Release = resp.json()?;
   Ok(value)
