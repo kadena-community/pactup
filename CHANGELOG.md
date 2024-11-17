@@ -1,5 +1,11 @@
 # pactup
 
+## 0.2.21
+
+### Patch Changes
+
+- [`cbcee11`](https://github.com/kadena-community/pactup/commit/cbcee115b63dbcd328be542ad9f0813146ed41c3) Thanks [@salamaashoush](https://github.com/salamaashoush)! - update deps and fix --use-on-cd
+
 ## 0.2.20
 
 ### Patch Changes

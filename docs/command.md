@@ -8,7 +8,7 @@ Usage: pactup [OPTIONS] <COMMAND>
 Commands:
   list-remote  List all remote Pact versions [aliases: ls-remote]
   list         List all locally installed Pact versions [aliases: ls]
-  install      Install a new Pact version
+  install      Install a new Pact version [aliases: i]
   use          Change Pact version
   env          Print and set up required environment variables for pactup
   completions  Print shell completions to stdout
@@ -17,7 +17,7 @@ Commands:
   default      Set a version as the default version
   current      Print the current Pact version
   exec         Run a command within pactup context
-  uninstall    Uninstall a Pact version
+  uninstall    Uninstall a Pact version [aliases: uni]
   which        Print the path to installed Pact version
   help         Print this message or the help of the given subcommand(s)
 
@@ -61,12 +61,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -140,12 +145,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -198,12 +208,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -275,12 +290,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -343,12 +363,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -375,7 +400,7 @@ Options:
       --shell <SHELL>
           The shell syntax to use. Infers when missing
 
-          [possible values: bash, zsh, fish, power-shell]
+          [possible values: bash, zsh, fish, powershell]
 
       --json
           Print JSON instead of shell commands
@@ -416,12 +441,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -444,7 +474,7 @@ Options:
       --shell <SHELL>
           The shell syntax to use. Infers when missing
 
-          [possible values: bash, zsh, fish, power-shell]
+          [possible values: bash, zsh, fish, powershell]
 
       --pact-5x-repo <PACT_5X_REPO>
           <https://github.com/kadena-io/pact>
@@ -479,12 +509,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -544,12 +579,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -606,12 +646,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -670,12 +715,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -731,12 +781,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -801,12 +856,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -865,12 +925,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
@@ -927,12 +992,17 @@ Options:
           - local:     Use the local version of Node defined within the current directory
           - recursive: Use the version of Node defined within the current directory and all parent directories
 
-      --resolve-engines
+      --resolve-engines [<RESOLVE_ENGINES>]
           Resolve `engines.pact` field in `package.json` whenever a `.pact-version` or `.pactrc` file is not present.
-          Experimental: This feature is subject to change.
+          This feature is enabled by default. To disable it, provide `--resolve-engines=false`.
+
           Note: `engines.pact` can be any semver range, with the latest satisfying version being resolved.
+          Note 2: If you disable it, please open an issue on GitHub describing _why_ you disabled it.
+                  In the future, disabling it might be a no-op, so it's worth knowing any reason to
+                  do that.
 
           [env: PACTUP_RESOLVE_ENGINES]
+          [possible values: true, false]
 
   -h, --help
           Print help (see a summary with '-h')
