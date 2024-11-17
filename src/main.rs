@@ -20,6 +20,7 @@ mod http;
 mod installed_versions;
 mod package_json;
 mod path_ext;
+mod pretty_serde;
 mod progress;
 mod remote_pact_index;
 mod shell;
@@ -30,6 +31,7 @@ mod user_version_reader;
 mod version;
 mod version_file_strategy;
 mod version_files;
+
 #[macro_use]
 mod log_level;
 mod default_version;

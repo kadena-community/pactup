@@ -32,8 +32,8 @@ log = "0.4"
 node-semver = "2.1"
 sysinfo = "0.32"
 tar = "0.4"
-tempfile = "3.13"
-thiserror = "1.0"
+tempfile = "3.14"
+thiserror = "2.0"
 zip = "2.2"
 duct = "0.13"
 pretty_assertions = "1.4"
@@ -43,6 +43,8 @@ walkdir = "2.5"
 indicatif = { version = "0.17", features = ["improved_unicode"] }
 regex = "1.11"
 xz2 = "0.1"
+miette = { version = "7.2.0", features = ["fancy"] }
+
 [dev-dependencies]
 pretty_assertions = "1.4"
 duct              = "0.13"
@@ -50,7 +52,7 @@ test-log          = "0.2"
 http              = "1.1"
 
 [build-dependencies]
-embed-resource = "2.5"
+embed-resource = "3"
 
 [target.'cfg(windows)'.dependencies]
 csv      = "1.3"

@@ -49,7 +49,13 @@ impl Command for Use {
         VersionFileStrategy::Local => InferVersionError::Local,
         VersionFileStrategy::Recursive => InferVersionError::Recursive,
       })
-      .map_err(|source| Error::CantInferVersion { source })?;
+      .map_err(|source| Error::CantInferVersion { source });
+
+    // Swallow the missing version error if `silent_if_unchanged` was provided
+    let requested_version = match (self.silent_if_unchanged, requested_version) {
+      (true, Err(_)) => return Ok(()),
+      (_, v) => v?,
+    };
 
     let current_version = requested_version.to_version(&all_versions, config);
     let (message, version_path) = if let Some(version) = current_version {

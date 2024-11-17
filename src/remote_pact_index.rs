@@ -1,7 +1,5 @@
-use crate::{
-  system_info::{get_platform, Platform, PlatformArch, PlatformOS},
-  version::Version,
-};
+use crate::system_info::{get_platform, Platform, PlatformArch, PlatformOS};
+use crate::{pretty_serde::DecodeError, version::Version};
 use chrono::{DateTime, Utc};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
@@ -108,22 +106,39 @@ fn handle_github_rate_limit(resp: reqwest::blocking::Response) -> reqwest::block
   resp
 }
 
-fn format_url(repo_url: &String, path: &str) -> String {
+fn format_url(repo_url: &str, path: &str) -> String {
   // i {
   //   // format!("https://ungh.cc/repos/{repo_url}/{path}",)
   // } else {
   format!("https://api.github.com/repos/{repo_url}/{path}")
   // }
 }
+
+#[derive(Debug, thiserror::Error, miette::Diagnostic)]
+pub enum Error {
+  #[error("can't get remote versions file: {0}")]
+  #[diagnostic(transparent)]
+  Http(#[from] crate::http::Error),
+  #[error("can't decode remote versions file: {0}")]
+  #[diagnostic(transparent)]
+  Decode(#[from] DecodeError),
+}
+
 /// Prints
 ///
 /// ```rust
 /// use crate::remote_pact_index::list;
 /// ```
-pub fn list(repo_url: &String) -> Result<Vec<Release>, crate::http::Error> {
-  let index_json_url = format_url(repo_url, "releases");
-  let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
-  let value: Vec<Release> = resp.json()?;
+pub fn list(repo_url: &str) -> Result<Vec<Release>, Error> {
+  let base_url = repo_url.trim_end_matches('/');
+  let index_json_url = format_url(base_url, "releases");
+  let resp = crate::http::get(&index_json_url)
+    .map_err(crate::http::Error::from)?
+    .error_for_status()
+    .map_err(crate::http::Error::from)?;
+  let text = resp.text().map_err(crate::http::Error::from)?;
+  let value: Vec<Release> =
+    serde_json::from_str(&text[..]).map_err(|cause| DecodeError::from_serde(text, cause))?;
   Ok(value)
 }
 
@@ -167,9 +182,9 @@ mod tests {
     assert_eq!(release, Some(expected_version));
     assert!(!release.unwrap().is_nightly());
 
-    let repo = "kadena-io/pact-5".to_string();
+    let repo = "kadena-io/pact-5";
     let expected_version = Version::parse("nightly").unwrap();
-    let mut versions = list(&repo).expect("Can't get HTTP data");
+    let mut versions = list(repo).expect("Can't get HTTP data");
     let release = versions
       .drain(..)
       .find(|x| x.tag_name == expected_version)

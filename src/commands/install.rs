@@ -193,8 +193,8 @@ pub enum Error {
   },
   #[error("Can't find version in dotfiles. Please provide a version manually to the command.")]
   CantInferVersion,
-  #[error("Having a hard time listing the remote versions: {source}")]
-  CantListRemoteVersions { source: crate::http::Error },
+  #[error(transparent)]
+  CantListRemoteVersions { source: remote_pact_index::Error },
   #[error("Can't find a Pact version that matches {requested_version} in remote")]
   CantFindPactVersion { requested_version: UserVersion },
   #[error("Can't find a release asset for the requested version: {requested_version}")]

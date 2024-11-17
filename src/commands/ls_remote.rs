@@ -135,9 +135,9 @@ impl LsRemote {
 #[derive(Debug, Error)]
 pub enum Error {
   #[error(transparent)]
-  HttpError {
+  RemoteListing {
     #[from]
-    source: crate::http::Error,
+    source: remote_pact_index::Error,
   },
   #[error("No nightly versions were found.")]
   NoNightlyVersions,
