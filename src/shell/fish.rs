@@ -33,24 +33,24 @@ impl Shell for Fish {
     };
     let autoload_hook = match config.version_file_strategy() {
       VersionFileStrategy::Local => formatdoc!(
-        r#"
+        r"
                     if {version_file_exists_condition}
                         pactup use --silent-if-unchanged
                     fi
-                "#,
+                ",
         version_file_exists_condition = version_file_exists_condition,
       ),
       VersionFileStrategy::Recursive => String::from(r"pactup use --silent-if-unchanged"),
     };
     Ok(formatdoc!(
-      r#"
+      r"
                 function __pactup_autoload_hook --on-variable PWD --description 'Change Pact version on directory change'
                     status --is-command-substitution; and return
                     {autoload_hook}
                 end
 
                 __pactup_autoload_hook
-            "#,
+            ",
       autoload_hook = autoload_hook
     ))
   }

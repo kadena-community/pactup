@@ -45,7 +45,7 @@ pub fn platform_arch() -> PlatformArch {
   PlatformArch::X64
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum PlatformOS {
   Windows,
   MacOS,
@@ -86,7 +86,7 @@ impl std::str::FromStr for PlatformOS {
   }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Hash)]
 pub enum PlatformArch {
   X86,
   X64,

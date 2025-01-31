@@ -119,6 +119,9 @@ impl Default for PactupConfig {
 }
 
 impl PactupConfig {
+  pub fn repo_urls(&self) -> Vec<&str> {
+    vec![&self.pact_5x_repo, &self.pact_4x_repo]
+  }
   pub fn version_file_strategy(&self) -> VersionFileStrategy {
     self.version_file_strategy
   }
