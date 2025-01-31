@@ -33,21 +33,21 @@ impl Shell for PowerShell {
     };
     let autoload_hook = match config.version_file_strategy() {
       VersionFileStrategy::Local => formatdoc!(
-        r#"
+        r"
                     If ({version_file_exists_condition}) {{ & pactup use --silent-if-unchanged }}
-                "#,
+                ",
         version_file_exists_condition = version_file_exists_condition,
       ),
       VersionFileStrategy::Recursive => String::from(r"pactup use --silent-if-unchanged"),
     };
     Ok(formatdoc!(
-      r#"
+      r"
                 function global:Set-PactupOnLoad {{ {autoload_hook} }}
                 function global:Set-LocationWithPactup {{ param($path); if ($path -eq $null) {{Set-Location}} else {{Set-Location $path}}; Set-PactupOnLoad }}
                 Set-Alias -Scope global cd_with_pactup Set-LocationWithPactup
                 Set-Alias -Option AllScope -Scope global cd Set-LocationWithPactup
                 Set-PactupOnLoad
-            "#,
+            ",
       autoload_hook = autoload_hook
     ))
   }

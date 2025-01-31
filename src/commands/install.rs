@@ -4,7 +4,7 @@ use crate::config::PactupConfig;
 use crate::downloader::{install_pact_dist, Error as DownloaderError};
 use crate::outln;
 use crate::progress::ProgressConfig;
-use crate::remote_pact_index::{self};
+use crate::remote_pact_index::{self, Release};
 use crate::user_version::UserVersion;
 use crate::version::Version;
 use crate::version_files::get_user_version_for_directory;
@@ -36,7 +36,7 @@ pub struct Install {
 }
 
 impl Install {
-  fn version(&self) -> Result<Option<UserVersion>, Error> {
+  fn resolve_version(&self) -> Result<Option<UserVersion>, Error> {
     match (self.version.as_ref(), self.nightly, self.latest) {
       (Some(v), false, false) => Ok(Some(v.clone())),
       (None, true, false) => Ok(Some(UserVersion::Full(Version::Nightly(
@@ -47,85 +47,101 @@ impl Install {
       _ => Err(Error::TooManyVersionsProvided),
     }
   }
-}
 
-impl Command for Install {
-  type Error = Error;
-
-  fn apply(self, config: &PactupConfig) -> Result<(), Self::Error> {
-    let current_dir = std::env::current_dir()?;
-    let show_progress = self.progress.enabled(config);
-    let force_install = self.force;
-    let current_version = self
-      .version()?
-      .or_else(|| get_user_version_for_directory(&current_dir, config))
-      .ok_or(Error::CantInferVersion)?;
-
-    let release = match &current_version {
+  fn resolve_release(
+    current_version: &UserVersion,
+    config: &PactupConfig,
+  ) -> Result<Release, Error> {
+    match current_version {
       UserVersion::Full(Version::Semver(actual_version)) => {
-        let available_releases = remote_pact_index::list(&config.pact_4x_repo)
-          .map_err(|source| Error::CantListRemoteVersions { source })?;
-
-        let picked_release = current_version
-          .to_release(&available_releases, config)
-          .ok_or_else(|| Error::CantFindPactVersion {
-            requested_version: current_version.clone(),
-          })?;
-
-        debug!(
-          "Resolved {} into Pact version {}",
-          Version::Semver(actual_version.clone()).v_str().cyan(),
-          picked_release.tag_name.v_str().cyan()
-        );
-        picked_release.clone()
+        Self::resolve_semver_release(actual_version, current_version, config)
       }
       UserVersion::Full(v @ (Version::Bypassed | Version::Alias(_))) => {
-        return Err(Error::UninstallableVersion { version: v.clone() });
+        Err(Error::UninstallableVersion { version: v.clone() })
       }
-      UserVersion::Full(Version::Nightly(nightly_tag)) => {
-        let picked_release = remote_pact_index::get_by_tag(&config.pact_5x_repo, nightly_tag)
-          .map_err(|_| Error::CantFindNightly {
-            nightly_tag: nightly_tag.clone(),
-          })?;
+      UserVersion::Full(Version::Nightly(tag)) => Self::resolve_nightly_release(tag, config),
+      UserVersion::Full(Version::Latest) => Self::resolve_latest_release(config),
+      _ => Self::resolve_generic_release(current_version, config),
+    }
+  }
 
-        debug!(
-          "Resolved {} into Pact version {}",
-          Version::Nightly(nightly_tag.clone()).v_str().cyan(),
-          picked_release.tag_name.v_str().cyan()
-        );
-        picked_release.clone()
-      }
-      UserVersion::Full(Version::Latest) => {
-        let picked_release =
-          remote_pact_index::latest(&config.pact_4x_repo).map_err(|_| Error::CantFindLatest)?;
+  fn resolve_semver_release(
+    actual_version: &node_semver::Version,
+    current_version: &UserVersion,
+    config: &PactupConfig,
+  ) -> Result<Release, Error> {
+    let available_releases = Self::get_available_releases(config)?;
+    let release = current_version
+      .to_release(&available_releases, config)
+      .ok_or_else(|| Error::CantFindPactVersion {
+        requested_version: current_version.clone(),
+      })?;
 
-        debug!(
-          "Resolved {} into Pact version {}",
-          Version::Latest.v_str().cyan(),
-          picked_release.tag_name.v_str().cyan()
-        );
-        picked_release.clone()
-      }
-      _ => {
-        let available_releases = remote_pact_index::list(&config.pact_4x_repo)
-          .map_err(|source| Error::CantListRemoteVersions { source })?;
+    debug!(
+      "Resolved {} into Pact version {}",
+      Version::Semver(actual_version.clone()).v_str().cyan(),
+      release.tag_name.v_str().cyan()
+    );
 
-        current_version
-          .to_release(&available_releases, config)
-          .ok_or_else(|| Error::CantFindPactVersion {
-            requested_version: current_version.clone(),
-          })?
-          .clone()
-      }
-    };
+    Ok(release.clone())
+  }
 
-    // Automatically swap Apple Silicon to x64 arch for appropriate versions.
+  fn resolve_nightly_release(nightly_tag: &str, config: &PactupConfig) -> Result<Release, Error> {
+    let release = remote_pact_index::get_by_tag(config.repo_urls(), &nightly_tag.to_string())
+      .map_err(|_| Error::CantFindNightly {
+        nightly_tag: nightly_tag.to_string(),
+      })?;
+
+    debug!(
+      "Resolved nightly into Pact version {}",
+      release.tag_name.v_str().cyan()
+    );
+
+    Ok(release)
+  }
+
+  fn resolve_latest_release(config: &PactupConfig) -> Result<Release, Error> {
+    let release =
+      remote_pact_index::latest(config.repo_urls()).map_err(|_| Error::CantFindLatest)?;
+
+    debug!(
+      "Resolved latest into Pact version {}",
+      release.tag_name.v_str().cyan()
+    );
+
+    Ok(release)
+  }
+
+  fn resolve_generic_release(
+    current_version: &UserVersion,
+    config: &PactupConfig,
+  ) -> Result<Release, Error> {
+    let available_releases = Self::get_available_releases(config)?;
+    current_version
+      .to_release(&available_releases, config)
+      .ok_or_else(|| Error::CantFindPactVersion {
+        requested_version: current_version.clone(),
+      })
+      .cloned()
+  }
+
+  fn get_available_releases(config: &PactupConfig) -> Result<Vec<Release>, Error> {
+    remote_pact_index::list(config.repo_urls())
+      .map_err(|source| Error::CantListRemoteVersions { source })
+  }
+
+  fn handle_installation(
+    &self,
+    release: &Release,
+    current_version: &UserVersion,
+    config: &PactupConfig,
+  ) -> Result<(), Error> {
     let version = &release.tag_name;
     outln!(
       config,
       Info,
       "Installing {} ({})",
-      format!("Pact {}", &version).cyan(),
+      format!("Pact {version}",).cyan(),
       config.arch.as_str()
     );
 
@@ -135,21 +151,40 @@ impl Command for Install {
         requested_version: current_version.clone(),
       })?;
 
+    self.perform_installation(version, &download_url, config)?;
+    Self::handle_aliases(release, current_version, config)?;
+
+    Ok(())
+  }
+
+  fn perform_installation(
+    &self,
+    version: &Version,
+    download_url: &url::Url,
+    config: &PactupConfig,
+  ) -> Result<(), Error> {
     match install_pact_dist(
       version,
-      &download_url,
+      download_url,
       config.installations_dir(),
       config.arch,
-      show_progress,
-      force_install,
+      self.progress.enabled(config),
+      self.force,
     ) {
       Err(err @ DownloaderError::VersionAlreadyInstalled { .. }) => {
         outln!(config, Error, "{} {}", "warning:".bold().yellow(), err);
+        Ok(())
       }
-      Err(source) => return Err(Error::DownloadError { source }),
-      Ok(()) => {}
-    };
+      Err(source) => Err(Error::DownloadError { source }),
+      Ok(()) => Ok(()),
+    }
+  }
 
+  fn handle_aliases(
+    release: &Release,
+    current_version: &UserVersion,
+    config: &PactupConfig,
+  ) -> Result<(), Error> {
     if !config.default_version_dir().exists() {
       debug!(
         "Tagging {} as the default version",
@@ -166,6 +201,21 @@ impl Command for Install {
   }
 }
 
+impl Command for Install {
+  type Error = Error;
+
+  fn apply(self, config: &PactupConfig) -> Result<(), Self::Error> {
+    let current_dir = std::env::current_dir()?;
+    let current_version = self
+      .resolve_version()?
+      .or_else(|| get_user_version_for_directory(&current_dir, config))
+      .ok_or(Error::CantInferVersion)?;
+
+    let release = Self::resolve_release(&current_version, config)?;
+    self.handle_installation(&release, &current_version, config)
+  }
+}
+
 fn tag_alias(
   config: &PactupConfig,
   matched_version: &Version,
@@ -178,7 +228,6 @@ fn tag_alias(
     matched_version.v_str().cyan()
   );
   create_alias(config, &alias_name, matched_version)?;
-
   Ok(())
 }
 
@@ -209,17 +258,76 @@ pub enum Error {
   TooManyVersionsProvided,
 }
 
-#[cfg(target_os = "linux")]
 #[cfg(test)]
 mod tests {
   use super::*;
   use pretty_assertions::assert_eq;
   use std::str::FromStr;
 
-  #[test]
-  fn test_set_default_on_new_installation() {
+  fn create_test_config() -> PactupConfig {
     let base_dir = tempfile::tempdir().unwrap();
-    let config = PactupConfig::default().with_base_dir(Some(base_dir.path().to_path_buf()));
+    PactupConfig::default().with_base_dir(Some(base_dir.path().to_path_buf()))
+  }
+
+  #[test]
+  fn test_resolve_version() {
+    let test_cases = vec![
+      (
+        Install {
+          version: Some(UserVersion::from_str("4.11.0").unwrap()),
+          nightly: false,
+          latest: false,
+          force: false,
+          progress: ProgressConfig::Never,
+        },
+        Ok(Some(UserVersion::from_str("4.11.0").unwrap())),
+      ),
+      (
+        Install {
+          version: None,
+          nightly: true,
+          latest: false,
+          force: false,
+          progress: ProgressConfig::Never,
+        },
+        Ok(Some(UserVersion::Full(Version::Nightly(
+          "nightly".to_string(),
+        )))),
+      ),
+      (
+        Install {
+          version: None,
+          nightly: false,
+          latest: true,
+          force: false,
+          progress: ProgressConfig::Never,
+        },
+        Ok(Some(UserVersion::Full(Version::Latest))),
+      ),
+      (
+        Install {
+          version: Some(UserVersion::from_str("4.11.0").unwrap()),
+          nightly: true,
+          latest: false,
+          force: false,
+          progress: ProgressConfig::Never,
+        },
+        Err(Error::TooManyVersionsProvided),
+      ),
+    ];
+
+    for (install, expected) in test_cases {
+      assert_eq!(
+        format!("{:?}", install.resolve_version()),
+        format!("{:?}", expected)
+      );
+    }
+  }
+
+  #[test]
+  #[cfg(target_os = "linux")]
+  fn test_set_default_on_new_installation() {
+    let config = create_test_config();
     assert!(!config.default_version_dir().exists());
 
     Install {
@@ -244,9 +352,9 @@ mod tests {
   }
 
   #[test]
+  #[cfg(target_os = "linux")]
   fn test_install_latest() {
-    let base_dir = tempfile::tempdir().unwrap();
-    let config = PactupConfig::default().with_base_dir(Some(base_dir.path().to_path_buf()));
+    let config = create_test_config();
 
     Install {
       version: None,
@@ -259,8 +367,8 @@ mod tests {
     .expect("Can't install");
 
     let latest_release =
-      remote_pact_index::latest(&config.pact_4x_repo).expect("Can't get pact version list");
-    let latest_version = latest_release.tag_name.clone();
+      remote_pact_index::latest(config.repo_urls()).expect("Can't get pact version list");
+    let latest_version = latest_release.tag_name;
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()
@@ -271,9 +379,9 @@ mod tests {
   }
 
   #[test]
+  #[cfg(target_os = "linux")]
   fn test_install_nightly() {
-    let base_dir = tempfile::tempdir().unwrap();
-    let config = PactupConfig::default().with_base_dir(Some(base_dir.path().to_path_buf()));
+    let config = create_test_config();
 
     Install {
       version: None,
@@ -286,15 +394,45 @@ mod tests {
     .expect("Can't install");
 
     let nightly_release =
-      remote_pact_index::get_by_tag(&config.pact_5x_repo, &String::from("nightly"))
+      remote_pact_index::get_by_tag(config.repo_urls(), &String::from("nightly"))
         .expect("Can't get pact version list");
-    let latest_version = nightly_release.tag_name.clone();
+    let nightly_version = nightly_release.tag_name;
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()
-      .join(latest_version.to_string())
+      .join(nightly_version.to_string())
       .canonicalize()
       .unwrap()
       .exists());
+  }
+
+  #[test]
+  fn test_uninstallable_version() {
+    let config = create_test_config();
+    let result = Install {
+      version: Some(UserVersion::Full(Version::Bypassed)),
+      nightly: false,
+      latest: false,
+      force: false,
+      progress: ProgressConfig::Never,
+    }
+    .apply(&config);
+
+    assert!(matches!(result, Err(Error::UninstallableVersion { .. })));
+  }
+
+  #[test]
+  fn test_too_many_versions() {
+    let config = create_test_config();
+    let result = Install {
+      version: Some(UserVersion::from_str("4.11.0").unwrap()),
+      nightly: true,
+      latest: false,
+      force: false,
+      progress: ProgressConfig::Never,
+    }
+    .apply(&config);
+
+    assert!(matches!(result, Err(Error::TooManyVersionsProvided)));
   }
 }

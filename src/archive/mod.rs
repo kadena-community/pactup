@@ -37,7 +37,7 @@ impl Archive {
       Some(Self::TarGz)
     } else if std::path::Path::new(url)
       .extension()
-      .map_or(false, |ext| ext.eq_ignore_ascii_case("zip"))
+      .is_some_and(|ext| ext.eq_ignore_ascii_case("zip"))
     {
       Some(Self::Zip)
     } else {
