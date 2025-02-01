@@ -129,22 +129,22 @@ mod tests {
 
     let result = String::from_utf8(stdout).expect("Can't read `pact --version` output");
 
-    assert_eq!(result.trim(), "pact version 4.11");
+    assert_eq!(result.trim(), "pact version 4.13");
   }
 
   fn install_in(path: &Path) -> PathBuf {
-    let version = Version::parse("4.11.0").unwrap();
+    let version = Version::parse("4.13.0").unwrap();
     #[cfg(target_arch = "x86_64")]
     let arch = PlatformArch::X64;
     #[cfg(target_arch = "aarch64")]
     let arch = PlatformArch::Arm64;
     // github release asset url
     let pact_dist_mirror = Url::parse(
-      "https://github.com/kadena-io/pact/releases/download/v4.11.0/pact-4.11.0-linux-20.04.zip",
+      "https://github.com/kadena-io/pact/releases/download/v4.13.0/pact-4.13.0-linux-20.04.zip",
     )
     .unwrap();
     install_pact_dist(&version, &pact_dist_mirror, path, arch, false, false)
-      .expect("Can't install Pact 4.11.0");
+      .expect("Can't install Pact 4.13.0");
 
     let mut location_path = path.join(version.v_str());
     // .join("installation");

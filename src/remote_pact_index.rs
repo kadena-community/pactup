@@ -266,14 +266,14 @@ mod tests {
     let test_cases = vec![
       // Semver formats
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::Linux,
         PlatformArch::X64,
         vec![
-          ("pact-4.11.0-linux-x64.tar.gz", true),
-          ("pact-4.11.0-linux-amd64.tar.gz", true),
-          ("pact-4.11.0-ubuntu-x64.tar.gz", true),
-          ("pact-4.11-linux-x64.tar.gz", true),
+          ("pact-4.13.0-linux-x64.tar.gz", true),
+          ("pact-4.13.0-linux-amd64.tar.gz", true),
+          ("pact-4.13.0-ubuntu-x64.tar.gz", true),
+          ("pact-4.13-linux-x64.tar.gz", true),
           ("pact-4-linux-x64.tar.gz", true),
           ("pact-invalid-linux-x64.tar.gz", false),
         ],
@@ -302,27 +302,27 @@ mod tests {
       ),
       // MacOS formats
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::MacOS,
         PlatformArch::Arm64,
         vec![
-          ("pact-4.11.0-darwin-arm64.tar.gz", true),
-          ("pact-4.11.0-darwin-aarch64.tar.gz", true),
-          ("pact-4.11.0-osx-arm64.tar.gz", true),
-          ("pact-4.11.0-macos-aarch64.tar.gz", true),
-          ("pact-4.11.0-darwin-x64.tar.gz", false),
+          ("pact-4.13.0-darwin-arm64.tar.gz", true),
+          ("pact-4.13.0-darwin-aarch64.tar.gz", true),
+          ("pact-4.13.0-osx-arm64.tar.gz", true),
+          ("pact-4.13.0-macos-aarch64.tar.gz", true),
+          ("pact-4.13.0-darwin-x64.tar.gz", false),
         ],
       ),
       // Windows formats
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::Windows,
         PlatformArch::X64,
         vec![
-          ("pact-4.11.0-windows-x64.zip", true),
-          ("pact-4.11.0-win-amd64.zip", true),
-          ("pact-4.11.0-windows-x86_64.zip", true),
-          ("pact-4.11.0-windows-arm64.zip", false),
+          ("pact-4.13.0-windows-x64.zip", true),
+          ("pact-4.13.0-win-amd64.zip", true),
+          ("pact-4.13.0-windows-x86_64.zip", true),
+          ("pact-4.13.0-windows-arm64.zip", false),
         ],
       ),
       // Special tags
@@ -380,38 +380,38 @@ mod tests {
   fn test_version_matcher_patterns_with_platform_version() {
     let test_cases = vec![
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::Linux,
         PlatformArch::X64,
         vec![
-          ("pact-4.11.0-linux-20.04.tar.gz", true),
-          ("pact-4.11.0-ubuntu-22.04.tar.gz", true),
-          ("pact-4.11.0-linux-20.04-x64.tar.gz", true),
-          ("pact-4.11.0-linux-20.04-amd64.tar.gz", true),
-          ("pact-4.11.0-linux.tar.gz", true), // No platform version or arch
-          ("pact-4.11.0-linux-invalid.tar.gz", false),
+          ("pact-4.13.0-linux-20.04.tar.gz", true),
+          ("pact-4.13.0-ubuntu-22.04.tar.gz", true),
+          ("pact-4.13.0-linux-20.04-x64.tar.gz", true),
+          ("pact-4.13.0-linux-20.04-amd64.tar.gz", true),
+          ("pact-4.13.0-linux.tar.gz", true), // No platform version or arch
+          ("pact-4.13.0-linux-invalid.tar.gz", false),
         ],
       ),
       // Test x64 default when no arch specified
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::Linux,
         PlatformArch::X64,
         vec![
-          ("pact-4.11.0-linux.tar.gz", true),
-          ("pact-4.11.0-ubuntu.tar.gz", true),
-          ("pact-4.11.0-linux-20.04.tar.gz", true),
+          ("pact-4.13.0-linux.tar.gz", true),
+          ("pact-4.13.0-ubuntu.tar.gz", true),
+          ("pact-4.13.0-linux-20.04.tar.gz", true),
         ],
       ),
       // Test arm64 requires explicit specification
       (
-        "4.11.0",
+        "4.13.0",
         PlatformOS::Linux,
         PlatformArch::Arm64,
         vec![
-          ("pact-4.11.0-linux-arm64.tar.gz", true),
-          ("pact-4.11.0-linux-aarch64.tar.gz", true),
-          ("pact-4.11.0-linux.tar.gz", true), // Should not match without arch
+          ("pact-4.13.0-linux-arm64.tar.gz", true),
+          ("pact-4.13.0-linux-aarch64.tar.gz", true),
+          ("pact-4.13.0-linux.tar.gz", true), // Should not match without arch
         ],
       ),
     ];
@@ -438,12 +438,12 @@ mod tests {
 
   #[test]
   fn test_asset_fallback_to_x64() {
-    let mut release = create_test_release("4.11.0");
+    let mut release = create_test_release("4.13.0");
     release.assets = vec![Asset {
       url: Url::parse("https://example.com/asset").unwrap(),
       browser_download_url: Url::parse("https://example.com/download").unwrap(),
       id: 1,
-      name: "pact-4.11.0-linux-20.04.tar.gz".to_string(), // No explicit arch
+      name: "pact-4.13.0-linux-20.04.tar.gz".to_string(), // No explicit arch
       size: 1000,
       created_at: DateTime::from_timestamp(0, 0).unwrap(),
       updated_at: DateTime::from_timestamp(0, 0).unwrap(),
@@ -455,13 +455,13 @@ mod tests {
 
   #[test]
   fn test_asset_for_current_platform() {
-    let mut release = create_test_release("4.11.0");
+    let mut release = create_test_release("4.13.0");
     let platform = get_platform();
     let asset_name = match platform {
-      Platform(PlatformOS::MacOS, PlatformArch::Arm64) => "pact-4.11.0-darwin-arm64.tar.gz",
-      Platform(PlatformOS::MacOS, PlatformArch::X64) => "pact-4.11.0-darwin-x64.tar.gz",
-      Platform(PlatformOS::Windows, _) => "pact-4.11.0-windows-x64.zip",
-      _ => "pact-4.11.0-linux-x64.tar.gz", // default for tests
+      Platform(PlatformOS::MacOS, PlatformArch::Arm64) => "pact-4.13.0-darwin-arm64.tar.gz",
+      Platform(PlatformOS::MacOS, PlatformArch::X64) => "pact-4.13.0-darwin-x64.tar.gz",
+      Platform(PlatformOS::Windows, _) => "pact-4.13.0-windows-x64.zip",
+      _ => "pact-4.13.0-linux-x64.tar.gz", // default for tests
     };
 
     release.assets = vec![Asset {
@@ -480,7 +480,7 @@ mod tests {
 
   #[test]
   fn test_unsupported_platform() {
-    let release = create_test_release("4.11.0");
+    let release = create_test_release("4.13.0");
     let result =
       release.version_matcher_for_platform(&Platform(PlatformOS::Windows, PlatformArch::S390x));
     assert!(result.is_ok());
@@ -518,7 +518,7 @@ mod tests {
   #[test]
   fn test_list() {
     let repo = "kadena-io/pact";
-    let expected_version = Version::parse("4.11.0").unwrap();
+    let expected_version = Version::parse("4.13.0").unwrap();
     let mut versions = list_internal(repo).expect("Can't get HTTP data");
     let release = versions
       .drain(..)

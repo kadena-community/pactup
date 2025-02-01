@@ -58,8 +58,8 @@ pub enum SubCommand {
   ///
   /// Example:
   /// --------
-  /// pactup exec --using=v4.11.0 pact --version
-  /// => v4.11.0
+  /// pactup exec --using=v4.13.0 pact --version
+  /// => v4.13.0
   #[clap(name = "exec", bin_name = "exec", verbatim_doc_comment)]
   Exec(commands::exec::Exec),
 

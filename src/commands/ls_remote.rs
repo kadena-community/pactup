@@ -167,8 +167,8 @@ mod tests {
 
   #[test]
   fn test_version_info_display() {
-    let mut release = create_test_release("4.11.0", true, true);
-    release.assets = vec![create_test_asset("pact-4.11.0-linux-x64.tar.gz")];
+    let mut release = create_test_release("4.13.0", true, true);
+    release.assets = vec![create_test_asset("pact-4.13.0-linux-x64.tar.gz")];
 
     let info = VersionInfo::new(&release);
     assert!(info.display().contains("(draft)"));
@@ -184,7 +184,7 @@ mod tests {
     };
 
     let mut versions = vec![
-      create_test_release("4.11.0", false, false),
+      create_test_release("4.13.0", false, false),
       create_test_release("4.10.0", false, false),
       create_test_release("4.12.0", false, false),
     ];
@@ -192,8 +192,8 @@ mod tests {
     cmd.sort_versions(&mut versions);
 
     assert_eq!(versions[0].tag_name.to_string(), "v4.10.0");
-    assert_eq!(versions[1].tag_name.to_string(), "v4.11.0");
-    assert_eq!(versions[2].tag_name.to_string(), "v4.12.0");
+    assert_eq!(versions[1].tag_name.to_string(), "v4.12.0");
+    assert_eq!(versions[2].tag_name.to_string(), "v4.13.0");
   }
 
   #[test]
@@ -206,21 +206,21 @@ mod tests {
 
     let mut versions = vec![
       create_test_release("4.10.0", false, false),
-      create_test_release("4.11.0", false, false),
+      create_test_release("4.13.0", false, false),
       create_test_release("4.12.0", false, false),
     ];
 
     cmd.sort_versions(&mut versions);
 
-    assert_eq!(versions[0].tag_name.to_string(), "v4.12.0");
-    assert_eq!(versions[1].tag_name.to_string(), "v4.11.0");
+    assert_eq!(versions[0].tag_name.to_string(), "v4.13.0");
+    assert_eq!(versions[1].tag_name.to_string(), "v4.12.0");
     assert_eq!(versions[2].tag_name.to_string(), "v4.10.0");
   }
 
   #[test]
   fn test_version_filtering() {
     let cmd = LsRemote {
-      filter: Some(UserVersion::from_str("4.11.0").unwrap()),
+      filter: Some(UserVersion::from_str("4.13.0").unwrap()),
       sort: SortingMethod::Ascending,
       latest: false,
     };
@@ -229,14 +229,14 @@ mod tests {
     let filtered = cmd.fetch_and_filter_versions(&config).unwrap();
 
     assert_eq!(filtered.len(), 1);
-    assert_eq!(filtered[0].tag_name.to_string(), "v4.11.0");
+    assert_eq!(filtered[0].tag_name.to_string(), "v4.13.0");
   }
 
   #[test]
   fn test_latest_version() {
     let versions = vec![
       create_test_release("4.10.0", false, false),
-      create_test_release("4.11.0", false, false),
+      create_test_release("4.13.0", false, false),
       create_test_release("4.12.0", false, false),
     ];
 
@@ -253,23 +253,23 @@ mod tests {
 
   #[test]
   fn test_version_info_with_no_annotations() {
-    let mut release = create_test_release("4.11.0", false, false);
+    let mut release = create_test_release("4.13.0", false, false);
     release.assets = vec![
-      create_test_asset("pact-4.11.0-linux-x64.tar.gz"),
-      create_test_asset("pact-4.11.0-macos-x64.tar.gz"),
-      create_test_asset("pact-4.11.0-windows-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-linux-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-macos-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-windows-x64.tar.gz"),
     ];
     let info = VersionInfo::new(&release);
-    assert_eq!(info.display(), "v4.11.0");
+    assert_eq!(info.display(), "v4.13.0");
   }
 
   #[test]
   fn test_version_info_with_supported_asset() {
-    let mut release = create_test_release("4.11.0", false, false);
+    let mut release = create_test_release("4.13.0", false, false);
     release.assets = vec![
-      create_test_asset("pact-4.11.0-linux-x64.tar.gz"),
-      create_test_asset("pact-4.11.0-macos-x64.tar.gz"),
-      create_test_asset("pact-4.11.0-windows-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-linux-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-macos-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-windows-x64.tar.gz"),
     ];
     let info = VersionInfo::new(&release);
     assert!(!info.display().contains("can't install"));

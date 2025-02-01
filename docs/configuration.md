@@ -25,7 +25,7 @@ So, let's say we have the following directory structure:
 ```
 repo/
 ├── package.json
-├── .pact-version <- with content: `4.11.0`
+├── .pact-version <- with content: `4.13.0`
 └── packages/
   └── my-package/ <- I am here
     └── package.json
@@ -37,7 +37,7 @@ And I'm running the following command:
 repo/packages/my-package$ pactup use
 ```
 
-Then pactup will switch to Pact v4.11.0
+Then pactup will switch to Pact v4.13.0
 
 Without the explicit flag, the value is set to `local`, which will not traverse the directory tree and therefore will print:
 
