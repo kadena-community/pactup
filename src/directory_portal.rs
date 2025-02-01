@@ -93,6 +93,7 @@ impl<P: AsRef<Path>> DirectoryPortal<P> {
   /// a subdirectory of `parent_dir` until teleporting to `target`.
   #[must_use]
   pub fn new_in(parent_dir: impl AsRef<Path>, target: P) -> Self {
+    std::fs::create_dir_all(&parent_dir).expect("Can't create parent directory");
     let temp_dir = TempDir::new_in(parent_dir).expect("Can't generate a temp directory");
     debug!("Created a temp directory in {:?}", temp_dir.path());
     Self { temp_dir, target }

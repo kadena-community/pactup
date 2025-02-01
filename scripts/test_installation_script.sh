@@ -22,16 +22,16 @@ $SHELL_TO_RUN -c "
 
 $SHELL_TO_RUN -c "
   . $PROFILE_FILE
-  pactup install 4.11
-  pactup ls | grep 4.11
+  pactup install 4.13
+  pactup ls | grep 4.13
 
   echo 'pactup ls worked.'
 "
 
 $SHELL_TO_RUN -c "
   . $PROFILE_FILE
-  pactup use 4.11
-  pact --version | grep 4.11
+  pactup use 4.13
+  pact --version | grep 4.13
 
   echo 'pact --version worked.'
 "

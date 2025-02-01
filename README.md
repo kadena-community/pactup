@@ -108,8 +108,8 @@ Adding a `.pact-version` to your project is as simple as:
 
 ```bash
 $ pact --version
-pact version 4.11.0
-$ echo "4.11" > .pact-version
+pact version 4.13.0
+$ echo "4.13" > .pact-version
 ```
 
 Check out the following guides for the shell you use:

@@ -804,8 +804,8 @@ Run a command within pactup context
 
 Example:
 --------
-pactup exec --using=v4.11.0 pact --version
-=> v4.11.0
+pactup exec --using=v4.13.0 pact --version
+=> v4.13.0
 
 Usage: pactup exec [OPTIONS] [ARGUMENTS]...
 

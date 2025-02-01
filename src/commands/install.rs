@@ -274,13 +274,13 @@ mod tests {
     let test_cases = vec![
       (
         Install {
-          version: Some(UserVersion::from_str("4.11.0").unwrap()),
+          version: Some(UserVersion::from_str("4.13.0").unwrap()),
           nightly: false,
           latest: false,
           force: false,
           progress: ProgressConfig::Never,
         },
-        Ok(Some(UserVersion::from_str("4.11.0").unwrap())),
+        Ok(Some(UserVersion::from_str("4.13.0").unwrap())),
       ),
       (
         Install {
@@ -306,7 +306,7 @@ mod tests {
       ),
       (
         Install {
-          version: Some(UserVersion::from_str("4.11.0").unwrap()),
+          version: Some(UserVersion::from_str("4.13.0").unwrap()),
           nightly: true,
           latest: false,
           force: false,
@@ -331,7 +331,7 @@ mod tests {
     assert!(!config.default_version_dir().exists());
 
     Install {
-      version: UserVersion::from_str("4.11.0").ok(),
+      version: UserVersion::from_str("4.13.0").ok(),
       nightly: false,
       latest: false,
       force: false,
@@ -345,7 +345,7 @@ mod tests {
       config.default_version_dir().canonicalize().ok(),
       config
         .installations_dir()
-        .join("v4.11.0")
+        .join("v4.13.0")
         .canonicalize()
         .ok()
     );
@@ -425,7 +425,7 @@ mod tests {
   fn test_too_many_versions() {
     let config = create_test_config();
     let result = Install {
-      version: Some(UserVersion::from_str("4.11.0").unwrap()),
+      version: Some(UserVersion::from_str("4.13.0").unwrap()),
       nightly: true,
       latest: false,
       force: false,

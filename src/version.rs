@@ -166,21 +166,21 @@ mod tests {
   fn test_version_parsing() {
     let test_cases = vec![
       (
-        "4.11.0",
+        "4.13.0",
         Ok(Version::Semver(
-          node_semver::Version::parse("4.11.0").unwrap(),
+          node_semver::Version::parse("4.13.0").unwrap(),
         )),
       ),
       (
-        "v4.11.0",
+        "v4.13.0",
         Ok(Version::Semver(
-          node_semver::Version::parse("4.11.0").unwrap(),
+          node_semver::Version::parse("4.13.0").unwrap(),
         )),
       ),
       (
-        "4.11",
+        "4.13",
         Ok(Version::Semver(
-          node_semver::Version::parse("4.11.0").unwrap(),
+          node_semver::Version::parse("4.13.0").unwrap(),
         )),
       ),
       (
@@ -209,8 +209,8 @@ mod tests {
   fn test_version_display() {
     let test_cases = vec![
       (
-        Version::Semver(node_semver::Version::parse("4.11.0").unwrap()),
-        "v4.11.0",
+        Version::Semver(node_semver::Version::parse("4.13.0").unwrap()),
+        "v4.13.0",
       ),
       (Version::Nightly("nightly".to_string()), "nightly"),
       (Version::Latest, "latest"),
