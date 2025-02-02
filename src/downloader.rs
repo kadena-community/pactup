@@ -118,7 +118,7 @@ mod tests {
   use tempfile::tempdir;
 
   #[test_log::test]
-  fn test_installing_pact_4_11() {
+  fn test_installing_pact_4_13() {
     let installations_dir = tempdir().unwrap();
     let pact_path = install_in(installations_dir.path()).join("pact");
     let stdout = duct::cmd(pact_path.to_str().unwrap(), vec!["--version"])

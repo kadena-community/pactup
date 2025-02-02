@@ -14,18 +14,18 @@ impl Command for Unalias {
   type Error = Error;
 
   fn apply(self, config: &PactupConfig) -> Result<(), Self::Error> {
-    let requested_version = choose_version_for_user_input::choose_version_for_user_input(
+    choose_version_for_user_input::choose_version_for_user_input(
       &UserVersion::Full(Version::Alias(self.requested_alias.clone())),
       config,
     )
     .ok()
     .flatten()
     .ok_or(Error::AliasNotFound {
-      requested_alias: self.requested_alias,
+      requested_alias: self.requested_alias.clone(),
     })?;
 
-    remove_symlink_dir(requested_version.path())
-      .map_err(|source| Error::CantDeleteSymlink { source })?;
+    let alias_path = config.aliases_dir().join(self.requested_alias);
+    remove_symlink_dir(&alias_path).map_err(|source| Error::CantDeleteSymlink { source })?;
 
     Ok(())
   }

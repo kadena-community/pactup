@@ -80,21 +80,22 @@ impl Install {
     debug!(
       "Resolved {} into Pact version {}",
       Version::Semver(actual_version.clone()).v_str().cyan(),
-      release.tag_name.v_str().cyan()
+      release.tag.v_str().cyan()
     );
 
     Ok(release.clone())
   }
 
   fn resolve_nightly_release(nightly_tag: &str, config: &PactupConfig) -> Result<Release, Error> {
-    let release = remote_pact_index::get_by_tag(config.repo_urls(), &nightly_tag.to_string())
-      .map_err(|_| Error::CantFindNightly {
+    let release = remote_pact_index::get_by_tag(config.repo_urls(), nightly_tag).map_err(|_| {
+      Error::CantFindNightly {
         nightly_tag: nightly_tag.to_string(),
-      })?;
+      }
+    })?;
 
     debug!(
       "Resolved nightly into Pact version {}",
-      release.tag_name.v_str().cyan()
+      release.tag.v_str().cyan()
     );
 
     Ok(release)
@@ -106,7 +107,7 @@ impl Install {
 
     debug!(
       "Resolved latest into Pact version {}",
-      release.tag_name.v_str().cyan()
+      release.tag.v_str().cyan()
     );
 
     Ok(release)
@@ -136,7 +137,7 @@ impl Install {
     current_version: &UserVersion,
     config: &PactupConfig,
   ) -> Result<(), Error> {
-    let version = &release.tag_name;
+    let version = &release.tag;
     outln!(
       config,
       Info,
@@ -188,13 +189,13 @@ impl Install {
     if !config.default_version_dir().exists() {
       debug!(
         "Tagging {} as the default version",
-        release.tag_name.v_str().cyan()
+        release.tag.v_str().cyan()
       );
-      create_alias(config, "default", &release.tag_name)?;
+      create_alias(config, "default", &release.tag)?;
     }
 
     if let Some(tagged_alias) = current_version.inferred_alias() {
-      tag_alias(config, &release.tag_name, &tagged_alias)?;
+      tag_alias(config, &release.tag, &tagged_alias)?;
     }
 
     Ok(())
@@ -368,7 +369,7 @@ mod tests {
 
     let latest_release =
       remote_pact_index::latest(config.repo_urls()).expect("Can't get pact version list");
-    let latest_version = latest_release.tag_name;
+    let latest_version = latest_release.tag;
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()
@@ -396,7 +397,7 @@ mod tests {
     let nightly_release =
       remote_pact_index::get_by_tag(config.repo_urls(), &String::from("nightly"))
         .expect("Can't get pact version list");
-    let nightly_version = nightly_release.tag_name;
+    let nightly_version = nightly_release.tag;
     assert!(config.installations_dir().exists());
     assert!(config
       .installations_dir()

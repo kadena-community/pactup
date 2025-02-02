@@ -1,10 +1,14 @@
 use assert_cmd::Command;
 use predicates::prelude::*;
+use serial_test::serial;
 use std::fs;
 use tempfile::{tempdir, TempDir};
 
 fn setup_test_env() -> TempDir {
   let temp_dir = tempdir().unwrap();
+
+  // delete all files in the temp directory
+  fs::remove_dir_all(temp_dir.path()).unwrap();
 
   // Create required directories
   fs::create_dir_all(temp_dir.path().join("pact-versions")).unwrap();
@@ -20,8 +24,10 @@ fn setup_test_env() -> TempDir {
 
 // Update version numbers to use a known available version
 const TEST_VERSION: &str = "4.13.0"; // Use a version we know exists
+mod e2e_tests {}
 
 #[test]
+#[serial]
 fn test_install_and_use_version() {
   let temp_dir = setup_test_env();
 
@@ -46,6 +52,7 @@ fn test_install_and_use_version() {
 }
 
 #[test]
+#[serial]
 fn test_alias_commands() {
   let temp_dir = setup_test_env();
 
@@ -67,7 +74,7 @@ fn test_alias_commands() {
 
   // List aliases
   let mut cmd = Command::cargo_bin("pactup").unwrap();
-  let assert = cmd.arg("ls-local").assert();
+  let assert = cmd.arg("ls").assert();
   assert.success().stdout(predicate::str::contains("stable"));
 
   // Remove alias
@@ -79,6 +86,7 @@ fn test_alias_commands() {
 }
 
 #[test]
+#[serial]
 fn test_default_version() {
   let temp_dir = setup_test_env();
 
@@ -93,6 +101,16 @@ fn test_default_version() {
   // Verify default symlink exists
   assert!(temp_dir.path().join("aliases/default").exists());
 
+  // Use default version
+  let mut cmd = Command::cargo_bin("pactup").unwrap();
+  cmd
+    .current_dir(&temp_dir)
+    .env("PACTUP_MULTISHELL_PATH", temp_dir.path().join("current"))
+    .arg("use")
+    .arg("default")
+    .assert()
+    .success();
+
   // Check current version
   let mut cmd = Command::cargo_bin("pactup").unwrap();
   cmd
@@ -104,6 +122,7 @@ fn test_default_version() {
 }
 
 #[test]
+#[serial]
 fn test_version_file() {
   let temp_dir = setup_test_env();
 
@@ -135,6 +154,7 @@ fn test_version_file() {
 }
 
 #[test]
+#[serial]
 fn test_which_command() {
   let _ = setup_test_env();
 
@@ -152,6 +172,7 @@ fn test_which_command() {
 
 // Add a helper test to ensure temp directories are created correctly
 #[test]
+#[serial]
 fn test_setup_directories() {
   let temp_dir = setup_test_env();
 

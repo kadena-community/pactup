@@ -34,7 +34,7 @@ fn generate_symlink_path() -> String {
   )
 }
 
-fn make_symlink(config: &PactupConfig) -> Result<std::path::PathBuf, Error> {
+pub fn make_symlink(config: &PactupConfig) -> Result<std::path::PathBuf, Error> {
   let base_dir = config.multishell_storage().ensure_exists_silently();
   let mut temp_dir = base_dir.join(generate_symlink_path());
 
