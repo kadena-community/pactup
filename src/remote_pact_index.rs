@@ -441,7 +441,8 @@ mod tests {
   }
 
   #[test]
-  fn test_asset_fallback_to_x64() {
+  #[cfg(target_os = "linux")]
+  fn test_asset_fallback_to_x64_on_linux() {
     let mut release = create_test_release("4.13.0");
     release.assets = vec![Asset {
       download_url: Url::parse("https://example.com/download/pact-4.13.0-linux-20.04.tar.gz")
