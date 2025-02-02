@@ -109,27 +109,31 @@ pub fn install_pact_dist<P: AsRef<Path>>(
 }
 
 #[cfg(test)]
-#[cfg(target_os = "linux")]
 mod tests {
   use super::*;
   use crate::downloader::install_pact_dist;
   use crate::version::Version;
-  use pretty_assertions::assert_eq;
   use tempfile::tempdir;
 
-  #[test_log::test]
+  #[test]
   fn test_installing_pact_4_13() {
     let installations_dir = tempdir().unwrap();
     let pact_path = install_in(installations_dir.path()).join("pact");
-    let stdout = duct::cmd(pact_path.to_str().unwrap(), vec!["--version"])
+    let cmd_result = duct::cmd(pact_path.to_str().unwrap(), vec!["--version"])
       .stdout_capture()
       .run()
-      .expect("Can't run Pact binary")
-      .stdout;
+      .expect("Can't run Pact binary");
 
-    let result = String::from_utf8(stdout).expect("Can't read `pact --version` output");
+    let result = String::from_utf8_lossy(&cmd_result.stdout).to_string()
+      + &String::from_utf8_lossy(&cmd_result.stderr).to_string();
 
-    assert_eq!(result.trim(), "pact version 4.13");
+    assert!([
+      "pact version 4.13",
+      // latest linux distros dont have libssl1.0.0
+      "libcrypto.so.1.1: cannot open shared object file: No such file or directory"
+    ]
+    .iter()
+    .any(|x| result.contains(x)));
   }
 
   fn install_in(path: &Path) -> PathBuf {
