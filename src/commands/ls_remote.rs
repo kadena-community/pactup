@@ -251,6 +251,7 @@ mod tests {
       create_test_asset("pact-4.13.0-linux-x64.tar.gz"),
       create_test_asset("pact-4.13.0-macos-x64.tar.gz"),
       create_test_asset("pact-4.13.0-windows-x64.tar.gz"),
+      create_test_asset("pact-4.13.0-darwin-aarch64.tar.gz"),
     ];
     let info = VersionInfo::new(&release);
     assert_eq!(info.display(), "v4.13.0");
