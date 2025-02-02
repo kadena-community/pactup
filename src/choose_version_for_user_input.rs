@@ -32,7 +32,6 @@ pub fn choose_version_for_user_input<'a>(
   let all_versions = installed_versions::list(config.installations_dir())
     .map_err(|source| Error::VersionListing { source })?;
   let current_version = requested_version.to_version(&all_versions, config);
-
   let result = if let Some(version) = current_version {
     info!("Using Pact {}", version.to_string().cyan());
     let path = config.installations_dir().join(version.to_string());

@@ -1,35 +1,11 @@
-use std::collections::HashMap;
-use std::fmt::Debug;
-
 use crate::system_info::{get_platform, Platform, PlatformArch, PlatformOS};
 use crate::{pretty_serde::DecodeError, version::Version};
-use chrono::{DateTime, Utc};
 use lazy_static::lazy_static;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::fmt::Debug;
 use url::Url;
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub struct Asset {
-  pub url: Url,
-  pub browser_download_url: Url,
-  pub id: usize,
-  pub name: String,
-  pub size: i64,
-  pub created_at: DateTime<Utc>,
-  pub updated_at: DateTime<Utc>,
-}
-
-/// The Release struct holds release information from the repository.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub struct Release {
-  pub tag_name: Version,
-  pub assets: Vec<Asset>,
-  pub prerelease: bool,
-  pub draft: bool,
-}
 
 lazy_static! {
   static ref PLATFORM_MAP: HashMap<PlatformOS, Vec<&'static str>> = {
@@ -52,9 +28,46 @@ lazy_static! {
   };
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Asset {
+  // pub content_type: String,
+  // pub size: i64,
+  // pub created_at: DateTime<Utc>,
+  // pub updated_at: DateTime<Utc>,
+  // pub download_count: i64,
+  pub download_url: Url,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Release {
+  // pub id: u64,
+  pub tag: Version,
+  // pub author: String,
+  // pub name: String,
+  pub draft: bool,
+  pub prerelease: bool,
+  // pub created_at: DateTime<Utc>,
+  // pub published_at: DateTime<Utc>,
+  // pub markdown: String,
+  // pub html: String,
+  pub assets: Vec<Asset>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+struct UnghReleasesResponse {
+  releases: Vec<Release>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+struct UnghLatestReleaseResponse {
+  release: Release,
+}
+
 impl Release {
   fn build_name_pattern(&self) -> String {
-    match &self.tag_name {
+    match &self.tag {
       Version::Semver(semver) => format!(
         "{}(\\.{})?(\\.{})?",
         semver.major, semver.minor, semver.patch
@@ -64,18 +77,14 @@ impl Release {
       Version::Bypassed => "system".to_string(),
     }
   }
-
-  /// Returns the appropriate version matcher for the specified platform.
   pub fn version_matcher_for_platform(&self, platform: &Platform) -> Result<Regex, String> {
     let Platform(os, arch) = platform;
 
-    // Get platform aliases
     let platform_patterns = PLATFORM_MAP
       .get(os)
       .ok_or_else(|| format!("Unsupported OS: {os}"))?
       .join("|");
 
-    // Get architecture aliases
     let arch_patterns = ARCH_MAP
       .get(arch)
       .ok_or_else(|| format!("Unsupported architecture: {arch}"))?
@@ -83,8 +92,6 @@ impl Release {
 
     let name_pattern = self.build_name_pattern();
 
-    // Build the complete regex pattern
-    // Now includes optional platform version (e.g., -20.04) and optional architecture
     let pattern = format!(
       r"^pact-{name_pattern}-({platform_patterns})(-\d+\.\d+)?(-({arch_patterns}))?\.(tar\.gz|zip)$"
     );
@@ -92,34 +99,47 @@ impl Release {
     Regex::new(&pattern).map_err(|e| format!("Regex creation error: {e}"))
   }
 
-  /// Finds the asset for the current architecture and platform.
   pub fn asset_for_current_platform(&self) -> Option<&Asset> {
     let platform = get_platform();
     let regex = self.version_matcher_for_platform(&platform).ok()?;
 
-    // First try to find an asset with explicit architecture
     self
       .assets
       .iter()
-      .find(|x| regex.is_match(&x.name))
+      .find(|x| {
+        // Extract filename from download_url
+        if let Some(filename) = &x
+          .download_url
+          .path_segments()
+          .and_then(std::iter::Iterator::last)
+        {
+          regex.is_match(filename)
+        } else {
+          false
+        }
+      })
       .or_else(|| {
-        // If no explicit architecture found and current arch is x64,
-        // try to find asset without architecture specification
         if let Platform(os, PlatformArch::X64) = platform {
           let platform_patterns = PLATFORM_MAP.get(&os)?;
           let name_pattern = self.build_name_pattern();
 
-          // Pattern for assets without architecture specification
           let fallback_pattern = format!(
             r"^pact-{name_pattern}-({})(-\d+\.\d+)?\.(tar\.gz|zip)$",
             platform_patterns.join("|")
           );
 
           if let Ok(fallback_regex) = Regex::new(&fallback_pattern) {
-            self
-              .assets
-              .iter()
-              .find(|x| fallback_regex.is_match(&x.name))
+            self.assets.iter().find(|x| {
+              if let Some(filename) = &x
+                .download_url
+                .path_segments()
+                .and_then(std::iter::Iterator::last)
+              {
+                fallback_regex.is_match(filename)
+              } else {
+                false
+              }
+            })
           } else {
             None
           }
@@ -129,43 +149,27 @@ impl Release {
       })
   }
 
-  /// Checks if the release has a supported asset for the current platform.
+  pub fn download_url(&self) -> Option<Url> {
+    self
+      .asset_for_current_platform()
+      .map(|asset| asset.download_url.clone())
+  }
+
   pub fn has_supported_asset(&self) -> bool {
     self.asset_for_current_platform().is_some()
   }
 
-  pub fn download_url(&self) -> Option<Url> {
-    self
-      .asset_for_current_platform()
-      .map(|asset| asset.browser_download_url.clone())
+  pub fn is_nightly(&self) -> bool {
+    self.tag.is_nightly()
   }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-struct GitHubRateLimitError {
-  message: String,
-  documentation_url: String,
-}
-
-fn handle_github_rate_limit(resp: reqwest::blocking::Response) -> reqwest::blocking::Response {
-  if resp.status().as_u16() == 403 {
-    let reset_time = resp
-      .headers()
-      .get("X-RateLimit-Reset")
-      .expect("Can't get X-RateLimit-Reset header")
-      .to_str()
-      .expect("Can't convert X-RateLimit-Reset header to string")
-      .parse::<i64>()
-      .expect("Can't parse X-RateLimit-Reset header");
-    let reset_time = DateTime::from_timestamp(reset_time, 0).unwrap();
-    println!("GitHub rate limit exceeded. Please wait until {reset_time} to try again.");
-  }
-  resp
-}
-
-fn format_url(repo_url: &str, path: &str) -> String {
-  format!("https://api.github.com/repos/{repo_url}/{path}")
+fn format_ungh_url(repo_url: &str, path: &str) -> String {
+  format!(
+    "https://ungh.cc/repos/{}/{}",
+    repo_url.trim_end_matches('/'),
+    path
+  )
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
@@ -176,19 +180,23 @@ pub enum Error {
   #[error("can't decode remote versions file: {0}")]
   #[diagnostic(transparent)]
   Decode(#[from] DecodeError),
+  #[error("can't find the release {0}")]
+  #[diagnostic(code(pactup::remote_pact_index::Error::NotFound))]
+  NotFound(String),
 }
 
 fn list_internal(repo_url: &str) -> Result<Vec<Release>, Error> {
-  let base_url = repo_url.trim_end_matches('/');
-  let index_json_url = format_url(base_url, "releases");
-  let resp = crate::http::get(&index_json_url)
+  let releases_url = format_ungh_url(repo_url, "releases");
+  let resp = crate::http::get(&releases_url)
     .map_err(crate::http::Error::from)?
     .error_for_status()
     .map_err(crate::http::Error::from)?;
+
   let text = resp.text().map_err(crate::http::Error::from)?;
-  let value: Vec<Release> =
+  let ungh_response: UnghReleasesResponse =
     serde_json::from_str(&text[..]).map_err(|cause| DecodeError::from_serde(text, cause))?;
-  Ok(value)
+
+  Ok(ungh_response.releases)
 }
 
 pub fn list(repo_urls: Vec<&str>) -> Result<Vec<Release>, Error> {
@@ -200,50 +208,46 @@ pub fn list(repo_urls: Vec<&str>) -> Result<Vec<Release>, Error> {
   Ok(releases)
 }
 
-fn latest_internal(repo_url: &str) -> Result<Release, crate::http::Error> {
-  let base_url = repo_url.trim_end_matches('/');
-  let index_json_url = format_url(base_url, "releases/latest");
-  let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
-  let value: Release = resp.json()?;
-  Ok(value)
+fn latest_internal(repo_url: &str) -> Result<Release, Error> {
+  let latest_url = format_ungh_url(repo_url, "releases/latest");
+
+  let resp = crate::http::get(&latest_url)
+    .map_err(crate::http::Error::from)?
+    .error_for_status()
+    .map_err(crate::http::Error::from)?;
+
+  let text = resp.text().map_err(crate::http::Error::from)?;
+  let ungh_response: UnghLatestReleaseResponse =
+    serde_json::from_str(&text[..]).map_err(|cause| DecodeError::from_serde(text, cause))?;
+
+  Ok(ungh_response.release)
 }
 
-pub fn latest(repo_urls: Vec<&str>) -> Result<Release, crate::http::Error> {
+pub fn latest(repo_urls: Vec<&str>) -> Result<Release, Error> {
   let mut picked: Option<Release> = None;
   for repo in repo_urls {
     let release = latest_internal(repo)?;
-    // Skip nightly releases when picking the latest
-    if release.tag_name.is_nightly() {
+    if release.is_nightly() {
       continue;
     }
     if let Some(ref picked_release) = picked {
-      if release.tag_name > picked_release.tag_name {
+      if release.tag > picked_release.tag {
         picked = Some(release);
       }
     } else {
       picked = Some(release);
     }
   }
-  Ok(picked.expect("Can't get the latest release from the repositories"))
+  picked.ok_or_else(|| Error::NotFound("latest".to_string()))
 }
 
-fn get_by_tag_internal(repo_url: &str, tag: &String) -> Result<Release, crate::http::Error> {
-  let base_url = repo_url.trim_end_matches('/');
-  let index_json_url = format_url(base_url, &format!("releases/tags/{tag}"));
-  let resp = handle_github_rate_limit(crate::http::get(&index_json_url)?);
-  let value: Release = resp.json()?;
-  Ok(value)
-}
-
-pub fn get_by_tag(repo_urls: Vec<&str>, tag: &String) -> Result<Release, crate::http::Error> {
-  let mut last_error = None;
-  for repo in repo_urls {
-    match get_by_tag_internal(repo, tag) {
-      Ok(release) => return Ok(release),
-      Err(e) => last_error = Some(e),
-    }
-  }
-  Err(last_error.expect("Can't get the release by tag from the repositories"))
+pub fn get_by_tag(repo_urls: Vec<&str>, tag: &str) -> Result<Release, Error> {
+  let releases = list(repo_urls)?;
+  let release = releases
+    .into_iter()
+    .find(|x| x.tag.to_string() == tag)
+    .ok_or_else(|| Error::NotFound(tag.to_string()))?;
+  Ok(release)
 }
 
 #[cfg(test)]
@@ -253,7 +257,7 @@ mod tests {
 
   fn create_test_release(version: &str) -> Release {
     Release {
-      tag_name: Version::parse(version).unwrap(),
+      tag: Version::parse(version).unwrap(),
       assets: vec![],
       prerelease: false,
       draft: false,
@@ -440,13 +444,8 @@ mod tests {
   fn test_asset_fallback_to_x64() {
     let mut release = create_test_release("4.13.0");
     release.assets = vec![Asset {
-      url: Url::parse("https://example.com/asset").unwrap(),
-      browser_download_url: Url::parse("https://example.com/download").unwrap(),
-      id: 1,
-      name: "pact-4.13.0-linux-20.04.tar.gz".to_string(), // No explicit arch
-      size: 1000,
-      created_at: DateTime::from_timestamp(0, 0).unwrap(),
-      updated_at: DateTime::from_timestamp(0, 0).unwrap(),
+      download_url: Url::parse("https://example.com/download/pact-4.13.0-linux-20.04.tar.gz")
+        .unwrap(),
     }];
 
     let asset = release.asset_for_current_platform();
@@ -465,13 +464,7 @@ mod tests {
     };
 
     release.assets = vec![Asset {
-      url: Url::parse("https://example.com/asset").unwrap(),
-      browser_download_url: Url::parse("https://example.com/download").unwrap(),
-      id: 1,
-      name: asset_name.to_string(),
-      size: 1000,
-      created_at: DateTime::from_timestamp(0, 0).unwrap(),
-      updated_at: DateTime::from_timestamp(0, 0).unwrap(),
+      download_url: Url::parse(&format!("https://example.com/download/{asset_name}")).unwrap(),
     }];
 
     assert!(release.has_supported_asset());
@@ -522,8 +515,8 @@ mod tests {
     let mut versions = list_internal(repo).expect("Can't get HTTP data");
     let release = versions
       .drain(..)
-      .find(|x| x.tag_name == expected_version)
-      .map(|x| x.tag_name);
+      .find(|x| x.tag == expected_version)
+      .map(|x| x.tag);
     assert_eq!(release, Some(expected_version));
     assert!(!release.unwrap().is_nightly());
 
@@ -532,8 +525,8 @@ mod tests {
     let mut versions = list_internal(repo).expect("Can't get HTTP data");
     let release = versions
       .drain(..)
-      .find(|x| x.tag_name == expected_version)
-      .map(|x| x.tag_name);
+      .find(|x| x.tag == expected_version)
+      .map(|x| x.tag);
     assert_eq!(release, Some(expected_version));
     assert!(release.unwrap().is_nightly());
   }

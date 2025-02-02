@@ -36,8 +36,8 @@ impl UserVersion {
   {
     available_versions
       .into_iter()
-      .filter(|x| self.matches(&x.tag_name, config))
-      .max_by_key(|x| &x.tag_name)
+      .filter(|x| self.matches(&x.tag, config))
+      .max_by_key(|x| &x.tag)
   }
 
   /// Get the alias name if this version represents an alias

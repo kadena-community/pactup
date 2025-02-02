@@ -46,7 +46,7 @@ impl VersionInfo {
     if release.prerelease {
       annotations.push("(prerelease)".cyan().to_string());
     }
-    if release.tag_name.is_nightly() {
+    if release.tag.is_nightly() {
       annotations.push("(nightly)".cyan().to_string());
     }
     if !release.has_supported_asset() {
@@ -54,7 +54,7 @@ impl VersionInfo {
     }
 
     Self {
-      version: release.tag_name.to_string(),
+      version: release.tag.to_string(),
       annotations,
     }
   }
@@ -83,7 +83,7 @@ impl super::command::Command for LsRemote {
 
     if self.latest {
       let latest = Self::get_latest_version(&versions)?;
-      println!("{}", latest.tag_name);
+      println!("{}", latest.tag);
       return Ok(());
     }
 
@@ -97,7 +97,7 @@ impl LsRemote {
     let mut versions = remote_pact_index::list(config.repo_urls())?;
 
     if let Some(ref filter) = self.filter {
-      versions.retain(|v| filter.matches(&v.tag_name, config));
+      versions.retain(|v| filter.matches(&v.tag, config));
     }
 
     Ok(versions)
@@ -108,7 +108,7 @@ impl LsRemote {
   }
 
   fn sort_versions(&self, versions: &mut [Release]) {
-    versions.sort_by(|a, b| a.tag_name.cmp(&b.tag_name));
+    versions.sort_by(|a, b| a.tag.cmp(&b.tag));
     if self.sort == SortingMethod::Descending {
       versions.reverse();
     }
@@ -140,13 +140,12 @@ mod tests {
   use crate::version::Version;
 
   use super::*;
-  use chrono::{DateTime, Utc};
   use pretty_assertions::assert_eq;
   use url::Url;
 
   fn create_test_release(version: &str, prerelease: bool, draft: bool) -> Release {
     Release {
-      tag_name: Version::parse(version).unwrap(),
+      tag: Version::parse(version).unwrap(),
       assets: vec![],
       prerelease,
       draft,
@@ -155,13 +154,7 @@ mod tests {
 
   fn create_test_asset(name: &str) -> remote_pact_index::Asset {
     remote_pact_index::Asset {
-      url: Url::parse("https://example.com").unwrap(),
-      browser_download_url: Url::parse("https://example.com").unwrap(),
-      id: 1,
-      name: name.to_string(),
-      size: 0,
-      created_at: DateTime::<Utc>::from_timestamp(0, 0).unwrap(),
-      updated_at: DateTime::<Utc>::from_timestamp(0, 0).unwrap(),
+      download_url: Url::parse(&format!("https://example.com/download/{name}")).unwrap(),
     }
   }
 
@@ -191,9 +184,9 @@ mod tests {
 
     cmd.sort_versions(&mut versions);
 
-    assert_eq!(versions[0].tag_name.to_string(), "v4.10.0");
-    assert_eq!(versions[1].tag_name.to_string(), "v4.12.0");
-    assert_eq!(versions[2].tag_name.to_string(), "v4.13.0");
+    assert_eq!(versions[0].tag.to_string(), "v4.10.0");
+    assert_eq!(versions[1].tag.to_string(), "v4.12.0");
+    assert_eq!(versions[2].tag.to_string(), "v4.13.0");
   }
 
   #[test]
@@ -212,9 +205,9 @@ mod tests {
 
     cmd.sort_versions(&mut versions);
 
-    assert_eq!(versions[0].tag_name.to_string(), "v4.13.0");
-    assert_eq!(versions[1].tag_name.to_string(), "v4.12.0");
-    assert_eq!(versions[2].tag_name.to_string(), "v4.10.0");
+    assert_eq!(versions[0].tag.to_string(), "v4.13.0");
+    assert_eq!(versions[1].tag.to_string(), "v4.12.0");
+    assert_eq!(versions[2].tag.to_string(), "v4.10.0");
   }
 
   #[test]
@@ -229,7 +222,7 @@ mod tests {
     let filtered = cmd.fetch_and_filter_versions(&config).unwrap();
 
     assert_eq!(filtered.len(), 1);
-    assert_eq!(filtered[0].tag_name.to_string(), "v4.13.0");
+    assert_eq!(filtered[0].tag.to_string(), "v4.13.0");
   }
 
   #[test]
@@ -241,7 +234,7 @@ mod tests {
     ];
 
     let latest = LsRemote::get_latest_version(&versions).unwrap();
-    assert_eq!(latest.tag_name.to_string(), "v4.10.0");
+    assert_eq!(latest.tag.to_string(), "v4.10.0");
   }
 
   #[test]
