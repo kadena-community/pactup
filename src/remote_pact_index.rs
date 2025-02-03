@@ -93,7 +93,7 @@ impl Release {
     let name_pattern = self.build_name_pattern();
 
     let pattern = format!(
-      r"^pact-{name_pattern}-({platform_patterns})(-({arch_patterns}))?(-\d+\.\d+)?(-({arch_patterns}))?\.(tar\.gz|zip)$"
+      r"^pact-{name_pattern}-(({platform_patterns})(-({arch_patterns}))?|({arch_patterns})(-({platform_patterns}))?)(-\d+\.\d+)?(-({arch_patterns}))?\.(tar\.gz|zip)$"
     );
 
     Regex::new(&pattern).map_err(|e| format!("Regex creation error: {e}"))
@@ -102,7 +102,6 @@ impl Release {
   pub fn asset_for_current_platform(&self) -> Option<&Asset> {
     let platform = get_platform();
     let regex = self.version_matcher_for_platform(&platform).ok()?;
-
     self
       .assets
       .iter()
@@ -316,6 +315,9 @@ mod tests {
           ("pact-4.13.0-darwin-aarch64.tar.gz", true),
           ("pact-4.13.0-osx-arm64.tar.gz", true),
           ("pact-4.13.0-macos-aarch64.tar.gz", true),
+          ("pact-4.13.0-aarch64-macos.tar.gz", true),
+          ("pact-4.13.0-aarch64-osx.tar.gz", true),
+          ("pact-4.13.0-aarch64-darwin.tar.gz", true),
           ("pact-4.13.0-darwin-x64.tar.gz", false),
         ],
       ),
