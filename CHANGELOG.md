@@ -1,5 +1,11 @@
 # pactup
 
+## 0.3.0
+
+### Minor Changes
+
+- [#43](https://github.com/kadena-community/pactup/pull/43) [`0a72735`](https://github.com/kadena-community/pactup/commit/0a72735066d8f4acd67f5cc5fade81936880038b) Thanks [@salamaashoush](https://github.com/salamaashoush)! - Imporve version resolving and add e2e tests
+
 ## 0.2.21
 
 ### Patch Changes
