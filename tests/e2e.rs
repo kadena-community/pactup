@@ -23,7 +23,7 @@ fn setup_test_env() -> TempDir {
 }
 
 // Update version numbers to use a known available version
-const TEST_VERSION: &str = "4.13.0"; // Use a version we know exists
+const TEST_VERSION: &str = "5.0.0"; // Use a version we know exists
 mod e2e_tests {}
 
 #[test]

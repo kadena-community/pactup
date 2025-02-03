@@ -93,7 +93,7 @@ impl Release {
     let name_pattern = self.build_name_pattern();
 
     let pattern = format!(
-      r"^pact-{name_pattern}-({platform_patterns})(-\d+\.\d+)?(-({arch_patterns}))?\.(tar\.gz|zip)$"
+      r"^pact-{name_pattern}-({platform_patterns})(-({arch_patterns}))?(-\d+\.\d+)?(-({arch_patterns}))?\.(tar\.gz|zip)$"
     );
 
     Regex::new(&pattern).map_err(|e| format!("Regex creation error: {e}"))
@@ -166,7 +166,7 @@ impl Release {
 
 fn format_ungh_url(repo_url: &str, path: &str) -> String {
   format!(
-    "https://ungh.cc/repos/{}/{}",
+    "https://ungh.sashoush.dev/repos/{}/{}",
     repo_url.trim_end_matches('/'),
     path
   )
@@ -277,7 +277,9 @@ mod tests {
           ("pact-4.13.0-linux-x64.tar.gz", true),
           ("pact-4.13.0-linux-amd64.tar.gz", true),
           ("pact-4.13.0-ubuntu-x64.tar.gz", true),
+          ("pact-4.13.0-ubuntu-x64-22.10.tar.gz", true),
           ("pact-4.13-linux-x64.tar.gz", true),
+          ("pact-4.13-linux-x64-22.04.tar.gz", true),
           ("pact-4-linux-x64.tar.gz", true),
           ("pact-invalid-linux-x64.tar.gz", false),
         ],
