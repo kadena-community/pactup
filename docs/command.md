@@ -97,19 +97,11 @@ Options:
           [env: PACTUP_PACT4X_REPO]
           [default: kadena-io/pact]
 
-      --nightly
-          Include nightly versions
-
       --pact-5x-repo <PACT_5X_REPO>
           <https://github.com/kadena-io/pact>
 
           [env: PACTUP_PACT5X_REPO]
           [default: kadena-io/pact-5]
-
-      --pactup-dir <BASE_DIR>
-          The root directory of pact installations
-
-          [env: PACTUP_PACT_DIR]
 
       --sort <SORT>
           Version sorting order
@@ -122,6 +114,11 @@ Options:
 
       --latest
           Only show the latest matching version
+
+      --pactup-dir <BASE_DIR>
+          The root directory of pact installations
+
+          [env: PACTUP_PACT_DIR]
 
       --log-level <LOG_LEVEL>
           The log level of pactup commands
